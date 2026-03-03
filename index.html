@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CO.VER. SRL - Fleet Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- React 18 + ReactDOM dal CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel per compilare JSX direttamente nel browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #0a0c14;
+      }
+      #root {
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- Il tuo componente React -->
+    <script type="text/babel">
+      const { useState } = React;
+
+const OPERATORI = [
+  { id:"V01", nome:"Resp. Verrengia", ruolo:"Responsabile Parco Mezzi" },
+  { id:"A01", nome:"A. Esposito", ruolo:"Capo Cantiere" },
+  { id:"B01", nome:"M. Russo", ruolo:"Segreteria" },
+];
+
+const mezziIniziali = [
+  { id:1, cat:"Edilizia", nome:"Autocarro Scarrabile", desc:"Autocarro scarrabile per trasporto inerti e materiali", stato:"cantiere", revisione:"2025-04-08", assicurazione:"2025-09-20", bollo:"2025-05-15", carburante:310, guastiAperti:0, icon:"🚛" },
+  { id:2, cat:"Edilizia", nome:"Autocarro TURBO DAILY 35/E4", desc:"Autocarro leggero per trasporti urbani e logistica", stato:"deposito", revisione:"2025-03-28", assicurazione:"2025-10-05", bollo:"2025-05-01", carburante:145, guastiAperti:0, icon:"🚐" },
+  { id:3, cat:"Edilizia", nome:"Rullo WACKER NEUSON RD18-80", desc:"Rullo tandem per compattazione asfalto e terreni", stato:"officina", revisione:"2025-04-02", assicurazione:"2025-08-20", bollo:"2025-05-10", carburante:0, guastiAperti:2, icon:"🛞" },
+  { id:4, cat:"Movimento Terra", nome:"Mini Terna JCB 1CX HF-DW", desc:"Mini terna gommata per scavi in spazi ristretti", stato:"cantiere", revisione:"2025-06-15", assicurazione:"2025-11-10", bollo:"2025-07-01", carburante:180, guastiAperti:0, icon:"🚜" },
+  { id:5, cat:"Movimento Terra", nome:"Escavatore PC 210 NLC-8", desc:"Escavatore cingolato medio per scavi e demolizioni", stato:"cantiere", revisione:"2025-05-05", assicurazione:"2025-09-01", bollo:"2025-04-20", carburante:520, guastiAperti:1, icon:"🦾" },
+  { id:6, cat:"Movimento Terra", nome:"Miniescavatore PC15", desc:"Miniescavatore per lavori in aree urbane ristrette", stato:"deposito", revisione:"2025-11-18", assicurazione:"2026-04-10", bollo:"2025-12-01", carburante:90, guastiAperti:0, icon:"🦾" },
+  { id:7, cat:"Movimento Terra", nome:"Escavatore JCB 8035 ZTS", desc:"Miniescavatore a sbalzo zero per cantieri urbani", stato:"deposito", revisione:"2026-02-01", assicurazione:"2026-05-15", bollo:"2026-03-10", carburante:140, guastiAperti:0, icon:"🦾" },
+  { id:8, cat:"Movimento Terra", nome:"Pala Cingolata FL10", desc:"Pala cingolata per movimentazione terra e inerti", stato:"cantiere", revisione:"2025-07-28", assicurazione:"2025-11-10", bollo:"2025-06-30", carburante:390, guastiAperti:0, icon:"🚜" },
+  { id:9, cat:"Trasporti", nome:"Trattore Stradale MAN", desc:"Trattore per traino semirimorchi su lunghe percorrenze", stato:"cantiere", revisione:"2025-04-18", assicurazione:"2025-09-25", bollo:"2025-05-15", carburante:850, guastiAperti:0, icon:"🚚" },
+  { id:10, cat:"Trasporti", nome:"Semirimorchio DE ANGELIS", desc:"Semirimorchio per trasporto merci su strada", stato:"deposito", revisione:"2025-08-14", assicurazione:"2025-12-28", bollo:"2025-09-20", carburante:0, guastiAperti:0, icon:"🚛" },
+  { id:11, cat:"Trasporti", nome:"Semirimorchio Centina SCHMITZ", desc:"Semirimorchio centinato per carichi voluminosi", stato:"cantiere", revisione:"2025-10-08", assicurazione:"2026-03-20", bollo:"2025-11-01", carburante:0, guastiAperti:0, icon:"🚛" },
+  { id:12, cat:"Trasporti", nome:"Semirimorchio Vasca SCHMITZ", desc:"Semirimorchio a vasca per trasporto rifiuti e inerti", stato:"deposito", revisione:"2026-01-15", assicurazione:"2026-04-08", bollo:"2026-02-10", carburante:0, guastiAperti:0, icon:"🚛" },
+  { id:13, cat:"Sollevamenti", nome:"Carrello Elevatore LINDE H25D", desc:"Carrello elevatore diesel per magazzino e cantiere", stato:"deposito", revisione:"2025-04-05", assicurazione:"2025-09-10", bollo:"2025-05-01", carburante:120, guastiAperti:0, icon:"🏋️" },
+  { id:14, cat:"Sollevamenti", nome:"Sollevatore DIECI PEGASUS 60.21 ST.4", desc:"Sollevatore telescopico ad alta portata e raggiunta", stato:"cantiere", revisione:"2025-03-22", assicurazione:"2025-08-05", bollo:"2025-04-15", carburante:410, guastiAperti:1, icon:"🏗️" },
+  { id:15, cat:"Sollevamenti", nome:"Autogrù TEREX RT1045L", desc:"Autogrù tutto terreno per sollevamenti in cantiere", stato:"deposito", revisione:"2025-09-28", assicurazione:"2026-01-05", bollo:"2025-10-25", carburante:280, guastiAperti:0, icon:"🏗️" },
+];
+
+const guastiIniziali = [
+  { id:1, mezzoId:3, mezzo:"Rullo WACKER NEUSON RD18-80", data:"2025-02-10", desc:"Tamburo anteriore — anomalia vibrazione. Mezzo fermo in officina.", stato:"aperto", priorita:"critica", tipo:"Meccanico", dataDisponibilita:"2025-04-15", operatore:"Resp. Verrengia" },
+  { id:2, mezzoId:3, mezzo:"Rullo WACKER NEUSON RD18-80", data:"2025-02-22", desc:"Batteria di avviamento da sostituire.", stato:"aperto", priorita:"media", tipo:"Elettrico", dataDisponibilita:"2025-03-30", operatore:"A. Esposito" },
+  { id:3, mezzoId:5, mezzo:"Escavatore PC 210 NLC-8", data:"2025-02-20", desc:"Sensore temperatura motore — segnalazione intermittente.", stato:"aperto", priorita:"media", tipo:"Elettrico", dataDisponibilita:"2025-04-01", operatore:"Resp. Verrengia" },
+  { id:4, mezzoId:14, mezzo:"Sollevatore DIECI PEGASUS 60.21", data:"2025-02-08", desc:"Braccio telescopico — gioco eccessivo nell'estensione.", stato:"aperto", priorita:"alta", tipo:"Meccanico", dataDisponibilita:"2025-03-28", operatore:"A. Esposito" },
+  { id:5, mezzoId:6, mezzo:"Escavatore PC15", data:"2025-01-28", desc:"Sostituzione filtro idraulico — completata.", stato:"risolto", priorita:"bassa", tipo:"Idraulico", dataDisponibilita:null, operatore:"M. Russo" },
+  { id:6, mezzoId:9, mezzo:"Trattore Stradale MAN", data:"2025-01-15", desc:"Pneumatico anteriore sinistro — foratura riparata.", stato:"risolto", priorita:"bassa", tipo:"Pneumatici/Carrozzeria", dataDisponibilita:null, operatore:"A. Esposito" },
+];
+
+const TIPI_GUASTO = ["Meccanico","Elettrico","Idraulico","Pneumatici/Carrozzeria","Documenti/Scadenze","Altro"];
+const PRIORITA = ["critica","alta","media","bassa"];
+const categorie = ["Edilizia","Movimento Terra","Trasporti","Sollevamenti"];
+const catIcon = {"Edilizia":"🏗️","Movimento Terra":"🚜","Trasporti":"🚚","Sollevamenti":"🏋️"};
+const catColore = {"Edilizia":"#f97316","Movimento Terra":"#22c55e","Trasporti":"#3b82f6","Sollevamenti":"#a855f7"};
+const statoColore = {cantiere:"#f97316",deposito:"#22c55e",officina:"#ef4444"};
+const statoLabel = {cantiere:"In Cantiere",deposito:"Al Deposito",officina:"In Officina"};
+const prioritaColore = {critica:"#ef4444",alta:"#f97316",media:"#eab308",bassa:"#22c55e"};
+const prioritaIcon = {critica:"🔴",alta:"🟠",media:"🟡",bassa:"🟢"};
+const tipoIcon = {"Meccanico":"⚙️","Elettrico":"⚡","Idraulico":"💧","Pneumatici/Carrozzeria":"🛞","Documenti/Scadenze":"📋","Altro":"🔧"};
+const formatData = d => new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"});
+const giorniMancanti = d => Math.ceil((new Date(d)-new Date())/(1000*60*60*24));
+const oggi = () => new Date().toISOString().split("T")[0];
+
+// ── FORM GUASTO ──────────────────────────────────────────────────────────────
+function FormGuasto({ mezzoPreselezionato, tuttiMezzi, operatore, onSalva, onClose }) {
+  const [form, setForm] = useState({
+    mezzoId: mezzoPreselezionato ? mezzoPreselezionato.id : "",
+    tipo: "", priorita: "media", desc: "", dataDisponibilita: "",
+  });
+  const [errori, setErrori] = useState({});
+  const [salvato, setSalvato] = useState(false);
+
+  const set = (k, v) => { setForm(f=>({...f,[k]:v})); setErrori(e=>({...e,[k]:""})); };
+
+  const valida = () => {
+    const e = {};
+    if (!form.mezzoId) e.mezzoId = "Seleziona un mezzo";
+    if (!form.tipo) e.tipo = "Seleziona il tipo di problema";
+    if (!form.desc.trim() || form.desc.trim().length < 10) e.desc = "Descrivi il problema (min. 10 caratteri)";
+    setErrori(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSalva = () => {
+    if (!valida()) return;
+    const mezzo = tuttiMezzi.find(m => m.id === Number(form.mezzoId));
+    onSalva({
+      mezzoId: Number(form.mezzoId), mezzo: mezzo?.nome || "",
+      tipo: form.tipo, priorita: form.priorita,
+      desc: form.desc.trim(), dataDisponibilita: form.dataDisponibilita || null,
+      data: oggi(), stato: "aperto", operatore: operatore.nome,
+    });
+    setSalvato(true);
+    setTimeout(() => { setSalvato(false); onClose(); }, 1400);
+  };
+
+  const inp = (campo) => ({
+    width:"100%", background:"#060810",
+    border:`1px solid ${errori[campo]?"#ef4444":"#1a2440"}`,
+    borderRadius:8, padding:"9px 12px", color:"#e2e8f0",
+    fontFamily:"inherit", fontSize:12, outline:"none",
+  });
+  const lbl = { fontSize:10, color:"#94a3b8", marginBottom:5, display:"block", letterSpacing:.5, textTransform:"uppercase" };
+  const err = { fontSize:10, color:"#ef4444", marginTop:4 };
+
+  if (salvato) return (
+    <div style={{padding:40,textAlign:"center"}}>
+      <div style={{fontSize:40,marginBottom:12}}>✅</div>
+      <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#22c55e",letterSpacing:2}}>GUASTO REGISTRATO</div>
+      <div style={{fontSize:12,color:"#64748b",marginTop:6}}>Segnalazione salvata correttamente</div>
+    </div>
+  );
+
+  return (
+    <div style={{padding:20}}>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>🚛 Mezzo</label>
+        <select value={form.mezzoId} onChange={e=>set("mezzoId",e.target.value)} style={{...inp("mezzoId"),cursor:"pointer"}}>
+          <option value="">— Seleziona mezzo —</option>
+          {tuttiMezzi.map(m=>(
+            <option key={m.id} value={m.id}>{m.icon} {m.nome} ({statoLabel[m.stato]})</option>
+          ))}
+        </select>
+        {errori.mezzoId&&<div style={err}>⚠ {errori.mezzoId}</div>}
+      </div>
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>🔧 Tipo di problema</label>
+          <select value={form.tipo} onChange={e=>set("tipo",e.target.value)} style={{...inp("tipo"),cursor:"pointer"}}>
+            <option value="">— Seleziona —</option>
+            {TIPI_GUASTO.map(t=><option key={t} value={t}>{tipoIcon[t]} {t}</option>)}
+          </select>
+          {errori.tipo&&<div style={err}>⚠ {errori.tipo}</div>}
+        </div>
+        <div>
+          <label style={lbl}>🎯 Priorità</label>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}>
+            {PRIORITA.map(p=>(
+              <button key={p} onClick={()=>set("priorita",p)} style={{
+                padding:"5px 10px", borderRadius:6, cursor:"pointer",
+                fontFamily:"inherit", fontSize:11, fontWeight:700,
+                textAlign:"left", transition:"all .15s",
+                border:`1px solid ${form.priorita===p?prioritaColore[p]:"#1a2440"}`,
+                background: form.priorita===p?`${prioritaColore[p]}18`:"#060810",
+                color: form.priorita===p?prioritaColore[p]:"#64748b",
+              }}>
+                {prioritaIcon[p]} {p.charAt(0).toUpperCase()+p.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>📝 Descrizione del problema</label>
+        <textarea
+          value={form.desc} onChange={e=>set("desc",e.target.value)} rows={4}
+          placeholder="Descrivi il guasto: sintomi, quando si manifesta, cosa è già stato verificato..."
+          style={{...inp("desc"), resize:"vertical", lineHeight:1.6,
+            borderColor:errori.desc?"#ef4444":form.desc.length>9?"#22c55e44":"#1a2440"}}
+        />
+        <div style={{display:"flex",justifyContent:"space-between",marginTop:4}}>
+          {errori.desc?<span style={err}>⚠ {errori.desc}</span>:<span style={{fontSize:10,color:"#64748b"}}>Testo libero</span>}
+          <span style={{fontSize:10,color:form.desc.length>9?"#22c55e":"#64748b"}}>{form.desc.length} car.</span>
+        </div>
+      </div>
+
+      <div style={{marginBottom:20}}>
+        <label style={lbl}>📅 Data stimata disponibilità <span style={{color:"#334468",fontWeight:400}}>(opzionale)</span></label>
+        <input type="date" value={form.dataDisponibilita} min={oggi()}
+          onChange={e=>set("dataDisponibilita",e.target.value)}
+          style={{...inp(""),width:"auto",colorScheme:"dark"}}/>
+      </div>
+
+      <div style={{padding:"8px 12px",background:"#060810",borderRadius:8,border:"1px solid #1a2440",marginBottom:16,display:"flex",alignItems:"center",gap:8}}>
+        <span>👤</span>
+        <div>
+          <div style={{fontSize:9,color:"#64748b"}}>Segnalazione registrata da</div>
+          <div style={{fontSize:11,fontWeight:700,color:"#60a5fa"}}>{operatore.nome} <span style={{fontWeight:400,color:"#64748b"}}>· {operatore.ruolo}</span></div>
+        </div>
+      </div>
+
+      <div style={{display:"flex",gap:9}}>
+        <button onClick={handleSalva} style={{
+          flex:1, padding:"10px 14px", borderRadius:8, border:"none",
+          cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:700,
+          background:"#ef4444", color:"#fff",
+        }}>🔧 Registra Segnalazione</button>
+        <button onClick={onClose} style={{
+          padding:"10px 14px", borderRadius:8, border:"1px solid #1a2440",
+          cursor:"pointer", fontFamily:"inherit", fontSize:12,
+          fontWeight:600, background:"#0f1422", color:"#64748b",
+        }}>Annulla</button>
+      </div>
+    </div>
+  );
+}
+
+// ── COMPONENTE PRINCIPALE ────────────────────────────────────────────────────
+function FleetCover() {
+  const [mezzi, setMezzi] = useState(mezziIniziali);
+  const [guastiLog, setGuastiLog] = useState(guastiIniziali);
+  const [vista, setVista] = useState("dashboard");
+  const [catAttiva, setCatAttiva] = useState("Edilizia");
+  const [filtroStato, setFiltroStato] = useState("tutti");
+  const [cerca, setCerca] = useState("");
+  const [mezzoSel, setMezzoSel] = useState(null);
+  const [operatore, setOperatore] = useState(OPERATORI[0]);
+  const [showOpMenu, setShowOpMenu] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showFormGuasto, setShowFormGuasto] = useState(false);
+  const [mezzoPreselezionato, setMezzoPreselezionato] = useState(null);
+  // ← AGGIUNGI QUESTE DUE RIGHE QUI
+window.__mezzoSel = mezzoSel;
+window.__operatore = operatore;
+
+  const totCantiere = mezzi.filter(m=>m.stato==="cantiere").length;
+  const totDeposito = mezzi.filter(m=>m.stato==="deposito").length;
+  const totOfficina = mezzi.filter(m=>m.stato==="officina").length;
+  const totGuasti = guastiLog.filter(g=>g.stato==="aperto").length;
+
+  const mezziFiltrati = mezzi.filter(m=>
+    m.cat===catAttiva &&
+    (filtroStato==="tutti"||m.stato===filtroStato) &&
+    m.nome.toLowerCase().includes(cerca.toLowerCase())
+  );
+
+  const scadenzeAll = mezzi.flatMap(m=>[
+    {mezzo:m.nome,tipo:"Revisione",data:m.revisione,icon:"🔍"},
+    {mezzo:m.nome,tipo:"Assicurazione",data:m.assicurazione,icon:"🛡️"},
+    {mezzo:m.nome,tipo:"Bollo",data:m.bollo,icon:"📋"},
+  ]).filter(s=>giorniMancanti(s.data)>=0).sort((a,b)=>new Date(a.data)-new Date(b.data));
+
+  const apriFormGuasto = (mezzo=null) => {
+    setMezzoPreselezionato(mezzo);
+    setShowFormGuasto(true);
+  };
+
+  const salvaNuovoGuasto = (dati) => {
+    const nuovoId = Math.max(...guastiLog.map(g=>g.id)) + 1;
+    setGuastiLog(prev=>[{id:nuovoId,...dati},...prev]);
+    setMezzi(prev=>prev.map(m=>m.id===dati.mezzoId?{...m,guastiAperti:m.guastiAperti+1}:m));
+    if (mezzoSel && mezzoSel.id===dati.mezzoId)
+      setMezzoSel(m=>({...m,guastiAperti:m.guastiAperti+1}));
+  };
+
+  const segnaRisolto = (guastoId) => {
+    const guasto = guastiLog.find(g=>g.id===guastoId);
+    setGuastiLog(prev=>prev.map(g=>g.id===guastoId?{...g,stato:"risolto"}:g));
+    if (guasto) {
+      setMezzi(prev=>prev.map(m=>m.id===guasto.mezzoId?{...m,guastiAperti:Math.max(0,m.guastiAperti-1)}:m));
+      if (mezzoSel && mezzoSel.id===guasto.mezzoId)
+        setMezzoSel(m=>({...m,guastiAperti:Math.max(0,m.guastiAperti-1)}));
+    }
+  };
+
+  // handlePrint — nota: </sc"+"ript> spezzato per non chiudere il tag babel
+
+
+  const css=`
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a0c14}
+    .nb{background:none;border:none;color:#64748b;cursor:pointer;padding:9px 12px;border-radius:7px;font-size:12px;font-weight:500;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:8px;width:100%}
+    .nb:hover{background:#141c2c;color:#e2e8f0}.nb.on{background:#141c2c;color:#f97316;border-left:3px solid #f97316;padding-left:9px}
+    .card{background:#0f1422;border:1px solid #1a2440;border-radius:12px;padding:16px}
+    .mr{display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:9px;cursor:pointer;transition:all .15s;border:1px solid #1a2440;margin-bottom:6px;background:#0f1422}
+    .mr:hover{border-color:#f97316;background:#131b2e;transform:translateX(3px)}
+    .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;transition:all .2s}
+    .bto{background:#f97316;color:#fff}.bto:hover{background:#ea6c0a}
+    .btr{background:#ef4444;color:#fff}.btr:hover{background:#dc2626}
+    .btg{background:#1a2440;color:#94a3b8}.btg:hover{background:#1f2d50;color:#e2e8f0}
+    .bts{background:#15803d22;color:#22c55e;border:1px solid #22c55e33}.bts:hover{background:#15803d44}
+    .btp{background:#312e81;color:#a5b4fc;border:none}.btp:hover{background:#3730a3;color:#fff}
+    .fb{padding:5px 12px;border-radius:20px;border:1px solid #1a2440;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;transition:all .2s}
+    .fb.on{background:#f97316;border-color:#f97316;color:#fff}.fb:not(.on){background:#0f1422;color:#64748b}
+    .si{background:#0f1422;border:1px solid #1a2440;border-radius:8px;padding:7px 11px;color:#e2e8f0;font-family:inherit;font-size:12px;outline:none;width:155px}
+    .si:focus{border-color:#f97316}
+    .tab{padding:8px 12px;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;transition:all .2s;border-bottom:2px solid transparent;background:none;color:#64748b}
+    .scard{border-radius:12px;padding:15px;cursor:pointer;transition:transform .15s;background:#0f1422;border:1px solid #1a2440}
+    .scard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+    .mo{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+    .md{background:#0f1422;border:1px solid #1a2440;border-radius:16px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+    .md-wide{max-width:580px}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0a0c14}::-webkit-scrollbar-thumb{background:#f97316;border-radius:2px}
+    .opmenu{position:absolute;top:calc(100% + 4px);right:0;background:#0f1422;border:1px solid #1a2440;border-radius:9px;min-width:210px;z-index:200;box-shadow:0 8px 28px rgba(0,0,0,.6);overflow:hidden}
+    .opitem{padding:10px 14px;cursor:pointer;font-size:12px;transition:background .15s}.opitem:hover{background:#141c2c}
+    .stoggle{background:#0f1422;border:1px solid #1a2440;border-radius:6px;color:#64748b;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+    .stoggle:hover{color:#f97316;border-color:#f97316}
+    select option{background:#0f1422;color:#e2e8f0}
+  `;
+
+  return (
+    <div style={{fontFamily:"'DM Sans','Segoe UI',sans-serif",background:"#0a0c14",minHeight:"100vh",color:"#e2e8f0"}}>
+      <style>{css}</style>
+
+      {/* HEADER */}
+      <div style={{background:"linear-gradient(180deg,#0c1020,#0a0c14)",borderBottom:"1px solid #1a2440",padding:"0 18px",display:"flex",alignItems:"center",justifyContent:"space-between",height:60,position:"sticky",top:0,zIndex:50}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <button className="stoggle" onClick={()=>setSidebarOpen(v=>!v)}>{sidebarOpen?"◀":"▶"}</button>
+          <div style={{background:"linear-gradient(160deg,#1c2d6a,#0e1840,#182460)",border:"1px solid #2e4080",borderRadius:7,padding:"5px 14px"}}>
+            <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:21,letterSpacing:3,background:"linear-gradient(180deg,#b0c4ee,#5570bb,#3a55a8,#8899cc)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>CO.VER. SRL</span>
+          </div>
+          <div style={{width:1,height:28,background:"#1a2440"}}/>
+          <div>
+            <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:19,letterSpacing:3,color:"#f97316",lineHeight:1}}>FLOTTA</div>
+            <div style={{fontSize:8,color:"#283860",letterSpacing:2,marginTop:1}}>GESTIONE PARCO MEZZI</div>
+          </div>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:9}}>
+          <span style={{fontSize:11,color:"#64748b"}}>📅 {new Date().toLocaleDateString("it-IT",{weekday:"short",day:"numeric",month:"short"})}</span>
+          {totGuasti>0&&<div onClick={()=>setVista("guasti")} style={{background:"#ef4444",borderRadius:"50%",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,cursor:"pointer"}}>{totGuasti}</div>}
+          <div style={{position:"relative"}}>
+            <div onClick={()=>setShowOpMenu(!showOpMenu)} style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:7,padding:"5px 10px",fontSize:11,cursor:"pointer",display:"flex",alignItems:"center",gap:6,userSelect:"none"}}>
+              <span>👤</span><span style={{color:"#e2e8f0",fontWeight:600}}>{operatore.nome}</span><span style={{color:"#283860",fontSize:9}}>▼</span>
+            </div>
+            {showOpMenu&&(
+              <div className="opmenu">
+                <div style={{padding:"7px 14px",fontSize:9,color:"#283860",letterSpacing:1.5,borderBottom:"1px solid #1a2440"}}>SELEZIONA OPERATORE</div>
+                {OPERATORI.map(op=>(
+                  <div key={op.id} className="opitem" onClick={()=>{setOperatore(op);setShowOpMenu(false);}}>
+                    <div style={{fontWeight:600,color:"#e2e8f0"}}>{op.nome}</div>
+                    <div style={{fontSize:10,color:"#64748b"}}>{op.ruolo} · {op.id}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:"flex"}}>
+        {/* SIDEBAR */}
+        {sidebarOpen&&(
+          <div style={{width:175,background:"#0c1020",borderRight:"1px solid #1a2440",minHeight:"calc(100vh - 60px)",padding:"12px 8px",flexShrink:0,position:"sticky",top:60,height:"calc(100vh - 60px)",overflowY:"auto"}}>
+            <div style={{fontSize:9,color:"#1e2d50",letterSpacing:2,padding:"0 4px",marginBottom:6}}>NAVIGAZIONE</div>
+            {[{id:"dashboard",icon:"📊",label:"Dashboard"},{id:"mezzi",icon:"🚛",label:"Parco Mezzi"},{id:"scadenze",icon:"📅",label:"Scadenze"},{id:"guasti",icon:"🔧",label:`Guasti${totGuasti>0?" ("+totGuasti+")":""}`},{id:"carburante",icon:"⛽",label:"Carburante"}].map(item=>(
+              <button key={item.id} className={"nb"+(vista===item.id?" on":"")} onClick={()=>setVista(item.id)}>
+                <span style={{fontSize:14}}>{item.icon}</span><span>{item.label}</span>
+              </button>
+            ))}
+            <div style={{fontSize:9,color:"#1e2d50",letterSpacing:2,padding:"0 4px",marginBottom:6,marginTop:18}}>TOTALI</div>
+            {[{l:"Tot. Mezzi",v:mezzi.length,c:"#475569"},{l:"In Cantiere",v:totCantiere,c:"#f97316"},{l:"Al Deposito",v:totDeposito,c:"#22c55e"},{l:"In Officina",v:totOfficina,c:"#ef4444"}].map(s=>(
+              <div key={s.l} style={{display:"flex",justifyContent:"space-between",padding:"5px 7px"}}>
+                <span style={{fontSize:10,color:"#334468"}}>{s.l}</span>
+                <span style={{fontSize:11,fontWeight:700,color:s.c}}>{s.v}</span>
+              </div>
+            ))}
+            <div style={{marginTop:14,padding:"10px 8px",background:"#0a0c14",borderRadius:8,border:"1px solid #1a2440"}}>
+              <div style={{fontSize:9,color:"#1e2d50",letterSpacing:1.5,marginBottom:5}}>OPERATORE ATTIVO</div>
+              <div style={{fontSize:11,fontWeight:700,color:"#60a5fa"}}>{operatore.nome}</div>
+              <div style={{fontSize:9,color:"#334468"}}>{operatore.ruolo}</div>
+            </div>
+          </div>
+        )}
+
+        {/* CONTENUTO */}
+        <div style={{flex:1,padding:18,overflowY:"auto",maxHeight:"calc(100vh - 60px)"}}>
+
+          {/* DASHBOARD */}
+          {vista==="dashboard"&&(
+            <div>
+              <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>SITUAZIONE ATTUALE</h1>
+              <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>Parco mezzi CO.VER. srl — {new Date().toLocaleDateString("it-IT")} · <span style={{color:"#60a5fa"}}>{operatore.nome}</span></p>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:18}}>
+                {[
+                  {label:"In Cantiere",v:totCantiere,icon:"🏗️",c:"#f97316",sub:"di "+mezzi.length+" mezzi",t:"mezzi",f:"cantiere"},
+                  {label:"Al Deposito",v:totDeposito,icon:"🅿️",c:"#22c55e",sub:"disponibili",t:"mezzi",f:"deposito"},
+                  {label:"In Officina",v:totOfficina,icon:"🔧",c:"#ef4444",sub:"in riparazione",t:"mezzi",f:"officina"},
+                  {label:"Guasti Aperti",v:totGuasti,icon:"⚠️",c:"#eab308",sub:"da risolvere",t:"guasti",f:null}
+                ].map(s=>(
+                  <div key={s.label} className="scard" onClick={()=>{setVista(s.t);if(s.f)setFiltroStato(s.f);}} style={{borderTop:"3px solid "+s.c}}>
+                    <div style={{fontSize:20}}>{s.icon}</div>
+                    <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:40,color:s.c,lineHeight:1,marginTop:4}}>{s.v}</div>
+                    <div style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginTop:3}}>{s.label}</div>
+                    <div style={{fontSize:10,color:"#64748b",marginTop:1}}>{s.sub}</div>
+                    <div style={{fontSize:9,color:s.c,marginTop:5,opacity:.6}}>clicca per dettagli →</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                <div className="card">
+                  <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                    <h3 style={{fontSize:12,fontWeight:700}}>⚠️ Scadenze Imminenti</h3>
+                    <button className="btn btg" style={{padding:"3px 9px",fontSize:11}} onClick={()=>setVista("scadenze")}>Tutte →</button>
+                  </div>
+                  {scadenzeAll.filter(s=>giorniMancanti(s.data)<=50).slice(0,7).map((s,i)=>{
+                    const g=giorniMancanti(s.data),c=g<=14?"#ef4444":g<=30?"#f97316":"#eab308";
+                    return(
+                      <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 9px",background:"#0a0c14",borderRadius:7,marginBottom:4,borderLeft:"3px solid "+c}}>
+                        <span style={{fontSize:13}}>{s.icon}</span>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:11,fontWeight:600,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.mezzo}</div>
+                          <div style={{fontSize:9,color:"#64748b"}}>{s.tipo}</div>
+                        </div>
+                        <div style={{textAlign:"right",flexShrink:0}}>
+                          <div style={{fontSize:11,fontWeight:700,color:c}}>{g}gg</div>
+                          <div style={{fontSize:9,color:"#64748b"}}>{formatData(s.data)}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="card">
+                  <h3 style={{fontSize:12,fontWeight:700,marginBottom:12}}>📂 Mezzi per Categoria</h3>
+                  {categorie.map(cat=>{
+                    const mc=mezzi.filter(m=>m.cat===cat);
+                    return(
+                      <div key={cat} onClick={()=>{setVista("mezzi");setCatAttiva(cat);setFiltroStato("tutti");setCerca("");}}
+                        style={{padding:"9px 11px",background:"#0a0c14",borderRadius:8,marginBottom:7,cursor:"pointer",border:"1px solid #1a2440"}}
+                        onMouseEnter={e=>e.currentTarget.style.borderColor=catColore[cat]}
+                        onMouseLeave={e=>e.currentTarget.style.borderColor="#1a2440"}>
+                        <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                          <span style={{fontSize:11,fontWeight:700,color:catColore[cat]}}>{catIcon[cat]} {cat}</span>
+                          <span style={{fontSize:10,color:"#64748b"}}>{mc.length} mezzi</span>
+                        </div>
+                        <div style={{display:"flex",gap:10}}>
+                          <span style={{fontSize:10,color:"#f97316"}}>🏗️ {mc.filter(m=>m.stato==="cantiere").length}</span>
+                          <span style={{fontSize:10,color:"#22c55e"}}>🅿️ {mc.filter(m=>m.stato==="deposito").length}</span>
+                          {mc.filter(m=>m.stato==="officina").length>0&&<span style={{fontSize:10,color:"#ef4444"}}>🔧 {mc.filter(m=>m.stato==="officina").length}</span>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PARCO MEZZI */}
+          {vista==="mezzi"&&(
+            <div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+                <div>
+                  <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2}}>PARCO MEZZI</h1>
+                  <p style={{color:"#64748b",fontSize:11}}>{mezzi.length} veicoli registrati</p>
+                </div>
+                <button className="btn bto">+ Aggiungi Mezzo</button>
+              </div>
+              <div style={{borderBottom:"1px solid #1a2440",marginBottom:12,display:"flex",gap:2,flexWrap:"wrap"}}>
+                {categorie.map(cat=>(
+                  <button key={cat} className="tab" onClick={()=>{setCatAttiva(cat);setFiltroStato("tutti");setCerca("");}}
+                    style={{color:catAttiva===cat?catColore[cat]:"#64748b",borderBottom:"2px solid "+(catAttiva===cat?catColore[cat]:"transparent")}}>
+                    {catIcon[cat]} {cat} <span style={{opacity:.5}}>({mezzi.filter(m=>m.cat===cat).length})</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{display:"flex",gap:7,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}>
+                {["tutti","cantiere","deposito","officina"].map(f=>(
+                  <button key={f} className={"fb"+(filtroStato===f?" on":"")} onClick={()=>setFiltroStato(f)}>
+                    {f==="tutti"?"Tutti":statoLabel[f]}
+                  </button>
+                ))}
+                <input className="si" placeholder="🔍 Cerca mezzo..." value={cerca} onChange={e=>setCerca(e.target.value)}/>
+              </div>
+              {mezziFiltrati.length===0&&<div style={{textAlign:"center",padding:40,color:"#283860"}}>Nessun mezzo trovato</div>}
+              {mezziFiltrati.map(m=>{
+                const gr=giorniMancanti(m.revisione);
+                return(
+                  <div key={m.id} className="mr" onClick={()=>setMezzoSel(m)}>
+                    <div style={{fontSize:20,width:30,textAlign:"center",flexShrink:0}}>{m.icon}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:600,fontSize:12,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.nome}</div>
+                      <div style={{fontSize:10,color:"#64748b",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{m.desc}</div>
+                    </div>
+                    <span className="badge" style={{background:statoColore[m.stato]+"18",color:statoColore[m.stato],flexShrink:0}}>{statoLabel[m.stato]}</span>
+                    {gr<=30&&<span className="badge" style={{background:"#f9731618",color:"#f97316",flexShrink:0}}>⚠️ {gr}gg</span>}
+                    {m.guastiAperti>0&&<span className="badge" style={{background:"#ef444418",color:"#ef4444",flexShrink:0}}>🔧{m.guastiAperti}</span>}
+                    <span style={{color:"#64748b",flexShrink:0}}>›</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* SCADENZE */}
+          {vista==="scadenze"&&(
+            <div>
+              <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>SCADENZE</h1>
+              <p style={{color:"#64748b",fontSize:11,marginBottom:18}}>Revisioni, assicurazioni e bolli — tutti i {mezzi.length} mezzi</p>
+              {[["🔴 URGENTI — Entro 30 giorni",[0,30],"#ef4444"],["🟡 IN SCADENZA — Entro 90 giorni",[30,90],"#f97316"],["🟢 OK — Oltre 90 giorni",[90,9999],"#22c55e"]].map(([titolo,[min,max],colore])=>{
+                const items=scadenzeAll.filter(s=>{const g=giorniMancanti(s.data);return g>=min&&g<max;});
+                if(!items.length) return null;
+                return(
+                  <div key={titolo} style={{marginBottom:20}}>
+                    <h3 style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginBottom:9}}>{titolo} ({items.length})</h3>
+                    {items.map((s,i)=>{
+                      const g=giorniMancanti(s.data);
+                      return(
+                        <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",background:"#0f1422",borderRadius:9,marginBottom:5,borderLeft:"3px solid "+colore}}>
+                          <div style={{width:28,height:28,borderRadius:7,background:colore+"15",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{s.icon}</div>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontWeight:600,fontSize:11,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.mezzo}</div>
+                            <div style={{fontSize:9,color:"#64748b"}}>{s.tipo}</div>
+                          </div>
+                          <div style={{textAlign:"right",flexShrink:0}}>
+                            <div style={{fontWeight:700,color:colore,fontSize:13}}>{g}gg</div>
+                            <div style={{fontSize:9,color:"#64748b"}}>{formatData(s.data)}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* GUASTI */}
+          {vista==="guasti"&&(
+            <div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:2}}>
+                <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2}}>GUASTI & MANUTENZIONE</h1>
+                <button className="btn btr" onClick={()=>apriFormGuasto()}>🔧 Nuova segnalazione</button>
+              </div>
+              <p style={{color:"#64748b",fontSize:11,marginBottom:18}}>{totGuasti} aperte · {guastiLog.filter(g=>g.stato==="risolto").length} risolte</p>
+              {guastiLog.map(g=>(
+                <div key={g.id} style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:10,padding:"12px 14px",marginBottom:8,borderLeft:"4px solid "+prioritaColore[g.priorita]}}>
+                  <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10}}>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",gap:6,alignItems:"center",marginBottom:5,flexWrap:"wrap"}}>
+                        <span className="badge" style={{background:prioritaColore[g.priorita]+"18",color:prioritaColore[g.priorita]}}>{prioritaIcon[g.priorita]} {g.priorita.toUpperCase()}</span>
+                        <span className="badge" style={{background:g.stato==="aperto"?"#ef444418":"#22c55e18",color:g.stato==="aperto"?"#ef4444":"#22c55e"}}>{g.stato.toUpperCase()}</span>
+                        {g.tipo&&<span className="badge" style={{background:"#1a2440",color:"#94a3b8"}}>{tipoIcon[g.tipo]} {g.tipo}</span>}
+                      </div>
+                      <div style={{fontWeight:600,fontSize:12,color:"#e2e8f0"}}>{g.mezzo}</div>
+                      <div style={{fontSize:11,color:"#94a3b8",marginTop:3,lineHeight:1.4}}>{g.desc}</div>
+                      <div style={{display:"flex",gap:14,marginTop:5,flexWrap:"wrap"}}>
+                        <span style={{fontSize:10,color:"#64748b"}}>📅 {formatData(g.data)}</span>
+                        {g.dataDisponibilita&&<span style={{fontSize:10,color:"#60a5fa"}}>🔄 Disponibile: {formatData(g.dataDisponibilita)}</span>}
+                        {g.operatore&&<span style={{fontSize:10,color:"#64748b"}}>👤 {g.operatore}</span>}
+                      </div>
+                    </div>
+                    {g.stato==="aperto"&&(
+                      <button className="btn bts" style={{fontSize:10,flexShrink:0}} onClick={()=>segnaRisolto(g.id)}>✓ Risolto</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* CARBURANTE */}
+          {vista==="carburante"&&(
+            <div>
+              <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>CARBURANTE</h1>
+              <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>Consumo mensile — Marzo 2025</p>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
+                {[
+                  {l:"Totale Litri",v:mezzi.reduce((a,m)=>a+m.carburante,0)+" L",c:"#f97316"},
+                  {l:"Costo Stimato",v:"€ "+(mezzi.reduce((a,m)=>a+m.carburante,0)*1.75).toFixed(0),c:"#22c55e"},
+                  {l:"Mezzi Riforniti",v:mezzi.filter(m=>m.carburante>0).length,c:"#3b82f6"}
+                ].map(s=>(
+                  <div key={s.l} style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:10,padding:14,borderTop:"3px solid "+s.c}}>
+                    <div style={{fontSize:10,color:"#94a3b8",marginBottom:3}}>{s.l}</div>
+                    <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:s.c,lineHeight:1}}>{s.v}</div>
+                  </div>
+                ))}
+              </div>
+              {categorie.map(cat=>{
+                const mc=mezzi.filter(m=>m.cat===cat&&m.carburante>0);
+                if(!mc.length) return null;
+                const maxL=Math.max(...mezzi.filter(m=>m.carburante>0).map(m=>m.carburante));
+                return(
+                  <div key={cat} style={{marginBottom:18}}>
+                    <h3 style={{fontSize:11,fontWeight:700,color:catColore[cat],marginBottom:9}}>{catIcon[cat]} {cat}</h3>
+                    {mc.sort((a,b)=>b.carburante-a.carburante).map(m=>(
+                      <div key={m.id} style={{background:"#0f1422",borderRadius:8,padding:"10px 12px",marginBottom:6,border:"1px solid #1a2440"}}>
+                        <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                          <div style={{fontWeight:600,fontSize:11,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1}}>{m.nome}</div>
+                          <div style={{flexShrink:0,marginLeft:10}}>
+                            <span style={{fontWeight:700,color:"#f97316",fontSize:12}}>{m.carburante}L</span>
+                            <span style={{fontSize:10,color:"#64748b",marginLeft:7}}>€{(m.carburante*1.75).toFixed(0)}</span>
+                          </div>
+                        </div>
+                        <div style={{background:"#0a0c14",borderRadius:3,height:4,overflow:"hidden"}}>
+                          <div style={{width:(m.carburante/maxL*100)+"%",height:"100%",background:catColore[cat],borderRadius:3}}/>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* MODAL SCHEDA MEZZO */}
+      {mezzoSel&&(
+        <div className="mo" onClick={()=>setMezzoSel(null)}>
+          <div className="md" onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{fontSize:24,width:38,height:38,background:"#0a0c14",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid #1a2440"}}>{mezzoSel.icon}</div>
+                <div>
+                  <div style={{fontWeight:700,fontSize:13,color:"#e2e8f0"}}>{mezzoSel.nome}</div>
+                  <div style={{fontSize:10,color:"#64748b"}}>{mezzoSel.cat}</div>
+                </div>
+              </div>
+              <div style={{display:"flex",gap:7,alignItems:"center"}}>
+                <button className="btn btp" onClick={()=>window.handlePrint()}>🖨️ Stampa</button>
+                <button onClick={()=>setMezzoSel(null)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+              </div>
+            </div>
+            <div style={{padding:18}}>
+              <div style={{padding:"8px 12px",background:"#060810",borderRadius:8,border:"1px solid #1a2440",marginBottom:14,display:"flex",alignItems:"center",gap:8}}>
+                <span>👤</span>
+                <div>
+                  <div style={{fontSize:9,color:"#64748b"}}>Scheda compilata da</div>
+                  <div style={{fontSize:12,fontWeight:700,color:"#60a5fa"}}>{operatore.nome} <span style={{fontWeight:400,color:"#64748b"}}>· {operatore.ruolo} · {operatore.id}</span></div>
+                </div>
+              </div>
+              <span className="badge" style={{background:statoColore[mezzoSel.stato]+"18",color:statoColore[mezzoSel.stato],marginBottom:12,display:"inline-block"}}>📍 {statoLabel[mezzoSel.stato]}</span>
+              <div style={{fontSize:11,color:"#94a3b8",marginBottom:14,lineHeight:1.5,padding:"9px 11px",background:"#0a0c14",borderRadius:7}}>{mezzoSel.desc}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:9}}>
+                {[
+                  {label:"Revisione",v:formatData(mezzoSel.revisione),g:giorniMancanti(mezzoSel.revisione),icon:"🔍"},
+                  {label:"Assicurazione",v:formatData(mezzoSel.assicurazione),g:giorniMancanti(mezzoSel.assicurazione),icon:"🛡️"},
+                  {label:"Bollo",v:formatData(mezzoSel.bollo),g:giorniMancanti(mezzoSel.bollo),icon:"📋"},
+                  {label:"Carburante mese",v:mezzoSel.carburante>0?mezzoSel.carburante+" L":"— (elettrico/rim.)",g:null,icon:"⛽"}
+                ].map(info=>(
+                  <div key={info.label} style={{background:"#0a0c14",borderRadius:8,padding:11,border:"1px solid #1a2440"}}>
+                    <div style={{fontSize:9,color:"#64748b",marginBottom:3}}>{info.icon} {info.label}</div>
+                    <div style={{fontWeight:700,fontSize:12,color:info.g!==null&&info.g<=30?"#f97316":"#e2e8f0"}}>{info.v}</div>
+                    {info.g!==null&&<div style={{fontSize:10,color:info.g<=14?"#ef4444":info.g<=30?"#f97316":"#64748b",marginTop:2}}>{info.g} giorni rimanenti</div>}
+                  </div>
+                ))}
+              </div>
+              {mezzoSel.guastiAperti>0&&(
+                <div style={{marginTop:12,padding:11,background:"#ef444410",border:"1px solid #ef444428",borderRadius:9}}>
+                  <div style={{fontSize:11,color:"#ef4444",fontWeight:700}}>⚠️ {mezzoSel.guastiAperti} segnalazione/i aperta/e</div>
+                  <button className="btn btg" style={{marginTop:7,fontSize:10}} onClick={()=>{setMezzoSel(null);setVista("guasti");}}>Vai ai guasti →</button>
+                </div>
+              )}
+              <div style={{marginTop:14,display:"flex",gap:9}}>
+                <button className="btn bto" style={{flex:1}}>✏️ Modifica dati</button>
+                <button className="btn btr" onClick={()=>{apriFormGuasto(mezzoSel);setMezzoSel(null);}}>🔧 Segnala guasto</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL FORM GUASTO */}
+      {showFormGuasto&&(
+        <div className="mo" onClick={()=>setShowFormGuasto(false)}>
+          <div className={"md md-wide"} onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#ef4444"}}>🔧 NUOVA SEGNALAZIONE GUASTO</div>
+                <div style={{fontSize:10,color:"#64748b",marginTop:1}}>
+                  {mezzoPreselezionato?"Mezzo: "+mezzoPreselezionato.nome:"Seleziona il mezzo e descrivi il problema"}
+                </div>
+              </div>
+              <button onClick={()=>setShowFormGuasto(false)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+            </div>
+            <FormGuasto
+              mezzoPreselezionato={mezzoPreselezionato}
+              tuttiMezzi={mezzi}
+              operatore={operatore}
+              onSalva={salvaNuovoGuasto}
+              onClose={()=>setShowFormGuasto(false)}
+            />
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  React.createElement(React.StrictMode, null,
+    React.createElement(FleetCover)
+  )
+);
+    </script>
+    <script>
+      function handlePrint() {
+        var m = window.__mezzoSel;
+        var op = window.__operatore;
+        if (!m) return;
+        var oggi = new Date();
+        var gr = Math.ceil((new Date(m.revisione)-oggi)/86400000);
+        var ga = Math.ceil((new Date(m.assicurazione)-oggi)/86400000);
+        var gb = Math.ceil((new Date(m.bollo)-oggi)/86400000);
+        var cR = gr<=30?"#dc2626":gr<=90?"#ea580c":"#16a34a";
+        var cA = ga<=30?"#dc2626":ga<=90?"#ea580c":"#16a34a";
+        var cB = gb<=30?"#dc2626":gb<=90?"#ea580c":"#16a34a";
+        var sc = {cantiere:"#f97316",deposito:"#22c55e",officina:"#ef4444"};
+        var sl = {cantiere:"In Cantiere",deposito:"Al Deposito",officina:"In Officina"};
+        var fd = function(d){ return new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"}); };
+        var w = window.open('','_blank','width=800,height=700');
+        var h = [];
+        h.push('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Scheda '+m.nome+'</title>');
+        h.push('<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Segoe UI,sans-serif;padding:30px;color:#111}');
+        h.push('.hdr{display:flex;justify-content:space-between;border-bottom:3px solid #1e3a8a;padding-bottom:14px;margin-bottom:20px}');
+        h.push('.logo{font-size:22px;font-weight:900;letter-spacing:3px;color:#1e3a8a}');
+        h.push('h2{font-size:18px;font-weight:700;color:#1e3a8a;margin-bottom:8px}');
+        h.push('.sb{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;margin-right:6px;margin-bottom:12px}');
+        h.push('.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}');
+        h.push('.box{border:1px solid #e2e8f0;border-radius:9px;padding:12px}');
+        h.push('.lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;margin-bottom:3px}');
+        h.push('.val{font-size:15px;font-weight:700}');
+        h.push('.firma{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;border-top:1px solid #e2e8f0;padding-top:18px}');
+        h.push('.fline{border-bottom:1px solid #111;margin-top:28px}.flbl{font-size:10px;color:#94a3b8;margin-top:5px}');
+        h.push('.footer{margin-top:20px;font-size:9px;color:#94a3b8;text-align:center;padding-top:10px;border-top:1px solid #f1f5f9}');
+        h.push('@media print{body{padding:16px}}</style></head><body>');
+        h.push('<div class="hdr"><div class="logo">CO.VER. SRL<br>');
+        h.push('<small style="font-size:11px;color:#64748b">FLOTTA — GESTIONE PARCO MEZZI</small></div>');
+        h.push('<div style="text-align:right;font-size:11px;color:#64748b">');
+        h.push('<strong style="display:block;font-size:13px;color:#111">SCHEDA MEZZO</strong>');
+        h.push(oggi.toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"})+'</div></div>');
+        h.push('<h2>'+m.icon+' '+m.nome+'</h2>');
+        h.push('<span class="sb" style="background:#dbeafe;color:#1e3a8a">'+m.cat+'</span>');
+        h.push('<span class="sb" style="background:'+sc[m.stato]+'22;color:'+sc[m.stato]+'">'+sl[m.stato]+'</span>');
+        h.push('<p style="font-size:12px;color:#64748b;margin-bottom:16px;font-style:italic">'+m.desc+'</p>');
+        h.push('<div class="grid3">');
+        h.push('<div class="box" style="border-left:4px solid '+cR+'"><div class="lbl">Revisione</div><div class="val" style="color:'+cR+'">'+fd(m.revisione)+'</div><div style="font-size:11px;color:'+cR+'">'+gr+' giorni</div></div>');
+        h.push('<div class="box" style="border-left:4px solid '+cA+'"><div class="lbl">Assicurazione</div><div class="val" style="color:'+cA+'">'+fd(m.assicurazione)+'</div><div style="font-size:11px;color:'+cA+'">'+ga+' giorni</div></div>');
+        h.push('<div class="box" style="border-left:4px solid '+cB+'"><div class="lbl">Bollo</div><div class="val" style="color:'+cB+'">'+fd(m.bollo)+'</div><div style="font-size:11px;color:'+cB+'">'+gb+' giorni</div></div>');
+        h.push('</div>');
+        h.push('<div class="firma">');
+        h.push('<div><strong>'+op.nome+'</strong><div style="font-size:10px;color:#94a3b8">'+op.ruolo+'</div><div class="fline"></div><div class="flbl">Firma</div></div>');
+        h.push('<div><strong>Resp. Verrengia</strong><div style="font-size:10px;color:#94a3b8">Responsabile Parco Mezzi</div><div class="fline"></div><div class="flbl">Visto</div></div>');
+        h.push('</div>');
+        h.push('<div class="footer">CO.VER. SRL — Documento generato: '+oggi.toLocaleString("it-IT")+'</div>');
+        h.push('</body></html>');
+        w.document.write(h.join(''));
+        w.document.close();
+        setTimeout(function(){ w.print(); },400);
+      }
+      </script>
+  </body>
+</html>
+
