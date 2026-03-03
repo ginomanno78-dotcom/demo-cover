@@ -537,7 +537,12 @@ window.__operatore = operatore;
             <div>
               <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>SCADENZE</h1>
               <p style={{color:"#64748b",fontSize:11,marginBottom:18}}>Revisioni, assicurazioni e bolli — tutti i {mezzi.length} mezzi</p>
-              {[["🔴 URGENTI — Entro 30 giorni",[0,30],"#ef4444"],["🟡 IN SCADENZA — Entro 90 giorni",[30,90],"#f97316"],["🟢 OK — Oltre 90 giorni",[90,9999],"#22c55e"]].map(([titolo,[min,max],colore])=>{
+              {[
+                ["🔴 URGENTI — Entro 30 giorni",[0,30],"#ef4444"],
+                ["🟠 IN SCADENZA — Entro 60 giorni",[30,60],"#f97316"],
+                ["🟡 PROGRAMMATE — Entro 90 giorni",[60,90],"#eab308"],
+                ["🟢 OK — Oltre 90 giorni",[90,9999],"#22c55e"]
+              ].map(([titolo,[min,max],colore])=>{
                 const items=scadenzeAll.filter(s=>{const g=giorniMancanti(s.data);return g>=min&&g<max;});
                 if(!items.length) return null;
                 return(
@@ -549,8 +554,8 @@ window.__operatore = operatore;
                         <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",background:"#0f1422",borderRadius:9,marginBottom:5,borderLeft:"3px solid "+colore}}>
                           <div style={{width:28,height:28,borderRadius:7,background:colore+"15",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,flexShrink:0}}>{s.icon}</div>
                           <div style={{flex:1,minWidth:0}}>
-                            <div style={{fontWeight:600,fontSize:11,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.mezzo}</div>
-                            <div style={{fontSize:9,color:"#64748b"}}>{s.tipo}</div>
+                            <div style={{fontWeight:600,fontSize:14,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.mezzo}</div>
+                            <div style={{fontSize:14,color:"rgba(148,163,184,0.66)"}}>{s.tipo}</div>
                           </div>
                           <div style={{textAlign:"right",flexShrink:0}}>
                             <div style={{fontWeight:700,color:colore,fontSize:13}}>{g}gg</div>
