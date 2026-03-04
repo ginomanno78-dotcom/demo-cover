@@ -219,6 +219,9 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
   const [dataFine, setDataFine] = useState(mezzo?.cantierAttuale?.dataFine || "");
   const [dataInizio, setDataInizio] = useState(mezzo?.cantierAttuale?.dataInizio || oggi());
   const [motivoOfficina, setMotivoOfficina] = useState(mezzo?.motivoOfficina || "");
+  const [revisione, setRevisione] = useState(mezzo?.revisione || "");
+  const [assicurazione, setAssicurazione] = useState(mezzo?.assicurazione || "");
+  const [bollo, setBollo] = useState(mezzo?.bollo || "");
   const [erroreCantiere, setErroreCantiere] = useState("");
   const [erroreOperatore, setErroreOperatore] = useState("");
   const [salvato, setSalvato] = useState(false);
@@ -241,6 +244,9 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
     if (stato === "officina" && motivoOfficina.trim()) {
       modifiche.motivoOfficina = motivoOfficina.trim();
     }
+    modifiche.revisione = revisione;
+    modifiche.assicurazione = assicurazione;
+    modifiche.bollo = bollo;
     const mezzoAggiornato = { ...mezzo, ...modifiche };
     onSalva(mezzoAggiornato);
     setSalvato(true);
@@ -329,6 +335,25 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
           />
         </div>
       )}
+
+      <div style={{fontSize:11,color:"#94a3b8",marginBottom:6,marginTop:6,letterSpacing:.5,textTransform:"uppercase"}}>SCADENZE</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>🔍 Revisione</div>
+          <input type="date" value={revisione} onChange={e=>setRevisione(e.target.value)}
+            style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"7px 10px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12,colorScheme:"dark"}} />
+        </div>
+        <div>
+          <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>🛡️ Assicurazione</div>
+          <input type="date" value={assicurazione} onChange={e=>setAssicurazione(e.target.value)}
+            style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"7px 10px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12,colorScheme:"dark"}} />
+        </div>
+        <div>
+          <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>📋 Bollo</div>
+          <input type="date" value={bollo} onChange={e=>setBollo(e.target.value)}
+            style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"7px 10px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12,colorScheme:"dark"}} />
+        </div>
+      </div>
 
       <div style={{display:"flex",gap:9,marginTop:6}}>
         <button
@@ -511,9 +536,9 @@ function FleetCover() {
   const [showEditMezzo, setShowEditMezzo] = useState(false);
   const [mezzoInModifica, setMezzoInModifica] = useState(null);
   const [showFormAggiungiMezzo, setShowFormAggiungiMezzo] = useState(false);
-  // ← AGGIUNGI QUESTE DUE RIGHE QUI
-window.__mezzoSel = mezzoSel;
-window.__operatore = operatore;
+  window.__mezzoSel = mezzoSel;
+  window.__operatore = operatore;
+  window.__guastiLog = guastiLog;
 
   const totCantiere = mezzi.filter(m=>m.stato==="cantiere").length;
   const totDeposito = mezzi.filter(m=>m.stato==="deposito").length;
@@ -1113,6 +1138,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         h.push('.box{border:1px solid #e2e8f0;border-radius:9px;padding:12px}');
         h.push('.lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;margin-bottom:3px}');
         h.push('.val{font-size:15px;font-weight:700}');
+        h.push('.cant{background:#fef3c7;border:1px solid #f59e0b;border-radius:9px;padding:12px;margin-bottom:18px}');
         h.push('.firma{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;border-top:1px solid #e2e8f0;padding-top:18px}');
         h.push('.fline{border-bottom:1px solid #111;margin-top:28px}.flbl{font-size:10px;color:#94a3b8;margin-top:5px}');
         h.push('.footer{margin-top:20px;font-size:9px;color:#94a3b8;text-align:center;padding-top:10px;border-top:1px solid #f1f5f9}');
@@ -1126,13 +1152,41 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         h.push('<span class="sb" style="background:#dbeafe;color:#1e3a8a">'+m.cat+'</span>');
         h.push('<span class="sb" style="background:'+sc[m.stato]+'22;color:'+sc[m.stato]+'">'+sl[m.stato]+'</span>');
         h.push('<p style="font-size:12px;color:#64748b;margin-bottom:16px;font-style:italic">'+m.desc+'</p>');
+        if (m.stato === 'cantiere') {
+          var ca = m.cantierAttuale || {};
+          var nomeCan = (ca.nome || m.sito || '').trim();
+          var operatoreCan = (ca.operatore || '').trim();
+          var dataInizioCan = ca.dataInizio || m.inCantiereDa || '';
+          var dataFineCan = ca.dataFine || '';
+          var giorniPerm = dataInizioCan ? Math.max(0, Math.ceil((oggi - new Date(dataInizioCan)) / 86400000)) : 0;
+          h.push('<div class="cant">');
+          h.push('<div class="lbl" style="color:#b45309">Cantiere</div>');
+          h.push('<div style="margin-bottom:4px"><strong>Cantiere:</strong> '+(nomeCan || '—')+'</div>');
+          h.push('<div style="margin-bottom:4px"><strong>Operatore:</strong> '+(operatoreCan || '—')+'</div>');
+          h.push('<div style="margin-bottom:4px"><strong>Data inizio:</strong> '+(dataInizioCan ? fd(dataInizioCan) : '—')+'</div>');
+          h.push('<div style="margin-bottom:4px"><strong>Data fine prevista:</strong> '+(dataFineCan ? fd(dataFineCan) : 'Non definita')+'</div>');
+          h.push('<div><strong>Permanenza:</strong> '+giorniPerm+' giorni</div>');
+          h.push('</div>');
+        }
         h.push('<div class="grid3">');
         h.push('<div class="box" style="border-left:4px solid '+cR+'"><div class="lbl">Revisione</div><div class="val" style="color:'+cR+'">'+fd(m.revisione)+'</div><div style="font-size:11px;color:'+cR+'">'+gr+' giorni</div></div>');
         h.push('<div class="box" style="border-left:4px solid '+cA+'"><div class="lbl">Assicurazione</div><div class="val" style="color:'+cA+'">'+fd(m.assicurazione)+'</div><div style="font-size:11px;color:'+cA+'">'+ga+' giorni</div></div>');
         h.push('<div class="box" style="border-left:4px solid '+cB+'"><div class="lbl">Bollo</div><div class="val" style="color:'+cB+'">'+fd(m.bollo)+'</div><div style="font-size:11px;color:'+cB+'">'+gb+' giorni</div></div>');
         h.push('</div>');
+        h.push('<div class="box" style="margin-bottom:18px"><div class="lbl">Carburante mensile</div><div class="val">'+(m.carburante != null && m.carburante !== '' ? m.carburante + ' L' : '—')+'</div></div>');
+        var guastiList = (window.__guastiLog || []).filter(function(g){ return g.mezzoId === m.id; });
+        if (guastiList.length > 0) {
+          h.push('<div class="lbl" style="margin-bottom:6px">Guasti registrati</div>');
+          h.push('<table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:18px">');
+          h.push('<thead><tr style="border-bottom:1px solid #e2e8f0"><th style="text-align:left;padding:6px 8px">Data</th><th style="text-align:left;padding:6px 8px">Tipo</th><th style="text-align:left;padding:6px 8px">Priorit\u00e0</th><th style="text-align:left;padding:6px 8px">Stato</th><th style="text-align:left;padding:6px 8px">Descrizione</th></tr></thead><tbody>');
+          for (var i = 0; i < guastiList.length; i++) {
+            var g = guastiList[i];
+            h.push('<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:6px 8px">'+fd(g.data)+'</td><td style="padding:6px 8px">'+(g.tipo || '—')+'</td><td style="padding:6px 8px">'+(g.priorita || '—')+'</td><td style="padding:6px 8px">'+(g.stato || '—')+'</td><td style="padding:6px 8px">'+(g.desc || '—').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</td></tr>');
+          }
+          h.push('</tbody></table>');
+        }
         h.push('<div class="firma">');
-        h.push('<div><strong>'+op.nome+'</strong><div style="font-size:10px;color:#94a3b8">'+op.ruolo+'</div><div class="fline"></div><div class="flbl">Firma</div></div>');
+        h.push('<div><strong>'+(op ? op.nome : '—')+'</strong><div style="font-size:10px;color:#94a3b8">'+(op ? op.ruolo : '')+'</div><div class="fline"></div><div class="flbl">Firma</div></div>');
         h.push('<div><strong>Resp. Verrengia</strong><div style="font-size:10px;color:#94a3b8">Responsabile Parco Mezzi</div><div class="fline"></div><div class="flbl">Visto</div></div>');
         h.push('</div>');
         h.push('<div class="footer">CO.VER. SRL — Documento generato: '+oggi.toLocaleString("it-IT")+'</div>');
