@@ -214,6 +214,7 @@ function FormGuasto({ mezzoPreselezionato, tuttiMezzi, operatore, onSalva, onClo
 
 function EditMezzoForm({ mezzo, onSalva, onClose }) {
   const [stato, setStato] = useState(mezzo?.stato || "cantiere");
+  const [targa, setTarga] = useState(mezzo?.targa || "");
   const [nomeCantiere, setNomeCantiere] = useState(mezzo?.cantierAttuale?.nome || "");
   const [nomeOperatore, setNomeOperatore] = useState(mezzo?.cantierAttuale?.operatore || "");
   const [dataFine, setDataFine] = useState(mezzo?.cantierAttuale?.dataFine || "");
@@ -235,7 +236,7 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
       setErroreOperatore("Inserisci operatore/autista");
       return;
     }
-    const modifiche = { stato };
+    const modifiche = { stato, targa: targa.trim() };
     if (stato === "cantiere") {
       modifiche.cantierAttuale = { nome: nomeCantiere.trim(), dataInizio, operatore: nomeOperatore.trim(), dataFine: dataFine || undefined };
     } else {
@@ -276,6 +277,18 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
           <option value="deposito">Deposito</option>
           <option value="officina">Officina</option>
         </select>
+      </div>
+
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:11,color:"#94a3b8",marginBottom:6,letterSpacing:.5,textTransform:"uppercase"}}>TARGA</div>
+        <input
+          type="text"
+          value={targa}
+          onChange={e=>setTarga(e.target.value.toUpperCase())}
+          placeholder="Es. AB123CD"
+          maxLength={8}
+          style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:13}}
+        />
       </div>
 
       {stato==="cantiere"&&(
@@ -801,7 +814,7 @@ function FleetCover() {
   const mezziFiltrati = mezzi.filter(m=>
     (catAttiva==="TUTTI" || m.cat===catAttiva) &&
     (filtroStato==="tutti"||m.stato===filtroStato) &&
-    m.nome.toLowerCase().includes(cerca.toLowerCase())
+    (m.nome.toLowerCase().includes(cerca.toLowerCase()) || (m.targa && m.targa.toLowerCase().includes(cerca.toLowerCase())))
   );
 
   const scadenzeAll = mezzi.flatMap(m=>[
