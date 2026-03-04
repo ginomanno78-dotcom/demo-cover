@@ -215,9 +215,12 @@ function FormGuasto({ mezzoPreselezionato, tuttiMezzi, operatore, onSalva, onClo
 function EditMezzoForm({ mezzo, onSalva, onClose }) {
   const [stato, setStato] = useState(mezzo?.stato || "cantiere");
   const [nomeCantiere, setNomeCantiere] = useState(mezzo?.cantierAttuale?.nome || "");
+  const [nomeOperatore, setNomeOperatore] = useState(mezzo?.cantierAttuale?.operatore || "");
+  const [dataFine, setDataFine] = useState(mezzo?.cantierAttuale?.dataFine || "");
   const [dataInizio, setDataInizio] = useState(mezzo?.cantierAttuale?.dataInizio || oggi());
   const [motivoOfficina, setMotivoOfficina] = useState(mezzo?.motivoOfficina || "");
   const [erroreCantiere, setErroreCantiere] = useState("");
+  const [erroreOperatore, setErroreOperatore] = useState("");
   const [salvato, setSalvato] = useState(false);
 
   const handleConferma = () => {
@@ -225,9 +228,13 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
       setErroreCantiere("Inserisci il nome del cantiere");
       return;
     }
+    if (stato === "cantiere" && !nomeOperatore.trim()) {
+      setErroreOperatore("Inserisci operatore/autista");
+      return;
+    }
     const modifiche = { stato };
     if (stato === "cantiere") {
-      modifiche.cantierAttuale = { nome: nomeCantiere.trim(), dataInizio };
+      modifiche.cantierAttuale = { nome: nomeCantiere.trim(), dataInizio, operatore: nomeOperatore.trim(), dataFine: dataFine || undefined };
     } else {
       modifiche.cantierAttuale = null;
     }
@@ -256,7 +263,7 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
         <div style={{fontSize:11,color:"#94a3b8",marginBottom:6,letterSpacing:.5,textTransform:"uppercase"}}>Stato mezzo</div>
         <select
           value={stato}
-          onChange={e=>{setStato(e.target.value);setErroreCantiere("");}}
+          onChange={e=>{setStato(e.target.value);setErroreCantiere("");setErroreOperatore("");}}
           style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:13,cursor:"pointer"}}
         >
           <option value="cantiere">Cantiere</option>
@@ -277,6 +284,26 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
               style={{width:"100%",background:"#060810",border:`1px solid ${erroreCantiere?"#ef4444":"#1a2440"}`,borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12}}
             />
             {erroreCantiere&&<div style={{fontSize:10,color:"#ef4444",marginTop:4}}>⚠ {erroreCantiere}</div>}
+          </div>
+          <div style={{marginBottom:10}}>
+            <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>Operatore/Autista</div>
+            <input
+              type="text"
+              value={nomeOperatore}
+              onChange={e=>{setNomeOperatore(e.target.value);setErroreOperatore("");}}
+              placeholder="Es. D01 · Gino Manno"
+              style={{width:"100%",background:"#060810",border:`1px solid ${erroreOperatore?"#ef4444":"#1a2440"}`,borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12}}
+            />
+            {erroreOperatore&&<div style={{fontSize:10,color:"#ef4444",marginTop:4}}>⚠ {erroreOperatore}</div>}
+          </div>
+          <div style={{marginBottom:10}}>
+            <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>Data fine prevista <span style={{color:"#64748b",fontWeight:400}}>(opzionale)</span></div>
+            <input
+              type="date"
+              value={dataFine}
+              onChange={e=>setDataFine(e.target.value)}
+              style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"7px 10px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12,colorScheme:"dark",width:"100%"}}
+            />
           </div>
           <div style={{marginBottom:14}}>
             <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>Data inizio</div>
@@ -953,6 +980,8 @@ window.__operatore = operatore;
                   <div style={{fontSize:10,color:"#f97316",textTransform:"uppercase",letterSpacing:0.5,marginBottom:4}}>🏗️ Dettaglio permanenza in cantiere</div>
                   <div style={{marginBottom:2}}>Ubicazione: <span style={{fontWeight:600}}>{mezzoSel.cantierAttuale?.nome || "—"}</span></div>
                   <div style={{marginBottom:2}}>In cantiere dal: <span style={{fontWeight:600}}>{formatData(mezzoSel.cantierAttuale?.dataInizio)}</span></div>
+                  <div style={{marginBottom:2}}>👤 Operatore: <span style={{fontWeight:600}}>{mezzoSel.cantierAttuale?.operatore || "—"}</span></div>
+                  <div style={{marginBottom:2}}>📅 Fine prevista: <span style={{fontWeight:600}}>{mezzoSel.cantierAttuale?.dataFine ? formatData(mezzoSel.cantierAttuale.dataFine) : "Non definita"}</span></div>
                   <div>Permanenza: <span style={{fontWeight:600}}>{giorniInCantiere(mezzoSel.cantierAttuale?.dataInizio)} giorni</span></div>
                 </div>
               )}
