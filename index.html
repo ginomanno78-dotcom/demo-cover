@@ -675,11 +675,103 @@ function FormAggiungiMezzo({ onSalva, onClose }) {
   );
 }
 
+const METEO_OPTS = [{v:"sereno",l:"☀️ Sereno"},{v:"nuvoloso",l:"⛅ Nuvoloso"},{v:"pioggia",l:"🌧️ Pioggia"},{v:"vento",l:"💨 Vento"}];
+
+function FormRapportino({ onSalva, onClose }) {
+  const [data, setData] = useState(oggi());
+  const [cantiere, setCantiere] = useState("");
+  const [cliente, setCliente] = useState("");
+  const [condizioniMeteo, setCondizioniMeteo] = useState("sereno");
+  const [orarioInizio, setOrarioInizio] = useState("08:00");
+  const [orarioFine, setOrarioFine] = useState("17:00");
+  const [attivitaSvolte, setAttivitaSvolte] = useState("");
+  const [note, setNote] = useState("");
+  const [errori, setErrori] = useState({});
+
+  const setErr = (k, v) => setErrori(e=>({...e,[k]:v}));
+
+  const handleSalva = () => {
+    const e = {};
+    if (!data) e.data = "Obbligatorio";
+    if (!cantiere.trim()) e.cantiere = "Obbligatorio";
+    if (!cliente.trim()) e.cliente = "Obbligatorio";
+    if (!orarioInizio) e.orarioInizio = "Obbligatorio";
+    if (!orarioFine) e.orarioFine = "Obbligatorio";
+    if (!attivitaSvolte.trim()) e.attivitaSvolte = "Obbligatorio";
+    setErrori(e);
+    if (Object.keys(e).length) return;
+
+    onSalva({
+      data, cantiere: cantiere.trim(), cliente: cliente.trim(), condizioniMeteo,
+      orarioInizio, orarioFine, attivitaSvolte: attivitaSvolte.trim(), note: note.trim(),
+    });
+    onClose();
+  };
+
+  const inp = (c)=>({width:"100%",background:"#060810",border:`1px solid ${errori[c]?"#ef4444":"#1a2440"}`,borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12,outline:"none"});
+  const lbl = {fontSize:10,color:"#94a3b8",marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"};
+  const err = {fontSize:10,color:"#ef4444",marginTop:4};
+
+  return (
+    <div style={{padding:20}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>📅 Data</label>
+          <input type="date" value={data} onChange={e=>{setData(e.target.value);setErr("data","");}} style={{...inp("data"),colorScheme:"dark"}} />
+          {errori.data&&<div style={err}>⚠ {errori.data}</div>}
+        </div>
+        <div>
+          <label style={lbl}>🌤️ Condizioni meteo</label>
+          <select value={condizioniMeteo} onChange={e=>setCondizioniMeteo(e.target.value)} style={{...inp(""),cursor:"pointer"}}>
+            {METEO_OPTS.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+          </select>
+        </div>
+      </div>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>🏗️ Cantiere</label>
+        <input type="text" value={cantiere} onChange={e=>{setCantiere(e.target.value);setErr("cantiere","");}} placeholder="Nome cantiere" style={inp("cantiere")} />
+        {errori.cantiere&&<div style={err}>⚠ {errori.cantiere}</div>}
+      </div>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>👤 Cliente</label>
+        <input type="text" value={cliente} onChange={e=>{setCliente(e.target.value);setErr("cliente","");}} placeholder="Cliente committente" style={inp("cliente")} />
+        {errori.cliente&&<div style={err}>⚠ {errori.cliente}</div>}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>🕐 Orario inizio</label>
+          <input type="time" value={orarioInizio} onChange={e=>{setOrarioInizio(e.target.value);setErr("orarioInizio","");}} style={{...inp("orarioInizio"),colorScheme:"dark"}} />
+          {errori.orarioInizio&&<div style={err}>⚠ {errori.orarioInizio}</div>}
+        </div>
+        <div>
+          <label style={lbl}>🕔 Orario fine</label>
+          <input type="time" value={orarioFine} onChange={e=>{setOrarioFine(e.target.value);setErr("orarioFine","");}} style={{...inp("orarioFine"),colorScheme:"dark"}} />
+          {errori.orarioFine&&<div style={err}>⚠ {errori.orarioFine}</div>}
+        </div>
+      </div>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>📝 Attività svolte (obbligatorio)</label>
+        <textarea value={attivitaSvolte} onChange={e=>{setAttivitaSvolte(e.target.value);setErr("attivitaSvolte","");}} rows={3} placeholder="Descrizione attività" style={{...inp("attivitaSvolte"),resize:"vertical"}} />
+        {errori.attivitaSvolte&&<div style={err}>⚠ {errori.attivitaSvolte}</div>}
+      </div>
+      <div style={{marginBottom:18}}>
+        <label style={lbl}>📄 Note (opzionale)</label>
+        <textarea value={note} onChange={e=>setNote(e.target.value)} rows={2} placeholder="Note aggiuntive" style={{...inp(""),resize:"vertical"}} />
+      </div>
+      <div style={{display:"flex",gap:9}}>
+        <button onClick={handleSalva} style={{flex:1,padding:"9px 14px",borderRadius:8,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:700,background:"#f97316",color:"#fff"}}>✅ Salva rapportino</button>
+        <button onClick={onClose} style={{padding:"9px 14px",borderRadius:8,border:"1px solid #1a2440",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,background:"#0f1422",color:"#94a3b8"}}>Annulla</button>
+      </div>
+    </div>
+  );
+}
+
 // ── COMPONENTE PRINCIPALE ────────────────────────────────────────────────────
 function FleetCover() {
   const [mezzi, setMezzi] = useState(mezziIniziali);
   const [guastiLog, setGuastiLog] = useState(guastiIniziali);
   const [rifornimenti, setRifornimenti] = useState([]);
+  const [rapportini, setRapportini] = useState([]);
   const [vista, setVista] = useState("dashboard");
   const [catAttiva, setCatAttiva] = useState("Edilizia");
   const [filtroStato, setFiltroStato] = useState("tutti");
@@ -696,6 +788,7 @@ function FleetCover() {
   const [showFormRifornimento, setShowFormRifornimento] = useState(false);
   const [mezzoRifDettaglio, setMezzoRifDettaglio] = useState(null);
   const [mezzoRifSelezionato, setMezzoRifSelezionato] = useState(null);
+  const [showFormRapportino, setShowFormRapportino] = useState(false);
   window.__mezzoSel = mezzoSel;
   window.__operatore = operatore;
   window.__guastiLog = guastiLog;
@@ -765,6 +858,11 @@ function FleetCover() {
     const nuovoId = rifornimenti.length ? Math.max(...rifornimenti.map(r=>r.id)) + 1 : 1;
     const nuovo = { ...dati, id: nuovoId };
     setRifornimenti(prev => [...prev, nuovo]);
+  };
+
+  const salvaNuovoRapportino = (dati) => {
+    const nuovoId = rapportini.length ? Math.max(...rapportini.map(r=>r.id)) + 1 : 1;
+    setRapportini(prev => [...prev, { id: nuovoId, ...dati }]);
   };
 
   const salvaNuovoGuasto = (dati) => {
@@ -874,7 +972,7 @@ function FleetCover() {
         {sidebarOpen&&(
           <div style={{width:260,background:"#0c1020",borderRight:"1px solid #1a2440",minHeight:"calc(100vh - 60px)",padding:"16px 12px",flexShrink:0,position:"sticky",top:60,height:"calc(100vh - 60px)",overflowY:"auto"}}>
             <div style={{fontSize:12,color:"#f9fafb",letterSpacing:2,padding:"0 4px",marginBottom:10,textTransform:"uppercase"}}>NAVIGAZIONE</div>
-            {[{id:"dashboard",icon:"📊",label:"Dashboard"},{id:"mezzi",icon:"🚛",label:"Parco Mezzi"},{id:"scadenze",icon:"📅",label:"Scadenze"},{id:"guasti",icon:"🔧",label:`Guasti${totGuasti>0?" ("+totGuasti+")":""}`},{id:"carburante",icon:"⛽",label:"Carburante"}].map(item=>(
+            {[{id:"dashboard",icon:"📊",label:"Dashboard"},{id:"mezzi",icon:"🚛",label:"Parco Mezzi"},{id:"scadenze",icon:"📅",label:"Scadenze"},{id:"guasti",icon:"🔧",label:`Guasti${totGuasti>0?" ("+totGuasti+")":""}`},{id:"carburante",icon:"⛽",label:"Carburante"}/* RAPPORTINI - coming soon */].map(item=>(
               <button key={item.id} className={"nb"+(vista===item.id?" on":"")} onClick={()=>setVista(item.id)}>
                 <span style={{fontSize:15}}>{item.icon}</span>
                 <span>{item.label}</span>
@@ -1191,6 +1289,34 @@ function FleetCover() {
             </div>
           )}
 
+          {/* RAPPORTINI */}
+          {vista==="rapportini"&&(
+            <div>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+                <div>
+                  <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>RAPPORTINI</h1>
+                  <p style={{color:"#64748b",fontSize:11,marginBottom:0}}>Rapporti giornalieri cantiere</p>
+                </div>
+                <button className="btn bto" onClick={()=>setShowFormRapportino(true)}>➕ Nuovo Rapportino</button>
+              </div>
+              {rapportini.length===0 ? (
+                <div style={{padding:24,textAlign:"center",background:"#0f1422",border:"1px solid #1a2440",borderRadius:10,color:"#64748b",fontSize:12}}>Nessun rapportino presente</div>
+              ) : (
+                <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                  {rapportini.map(r=>(
+                    <div key={r.id} style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:10,padding:"12px 14px",display:"grid",gridTemplateColumns:"auto 1fr 1fr auto auto",gap:12,alignItems:"center"}}>
+                      <div style={{fontSize:12,color:"#e2e8f0",fontWeight:600,minWidth:100}}>{r.data}</div>
+                      <div style={{fontSize:12,color:"#94a3b8"}}>{r.cantiere}</div>
+                      <div style={{fontSize:12,color:"#94a3b8"}}>{r.cliente}</div>
+                      <div style={{fontSize:11,color:"#64748b"}}>{METEO_OPTS.find(o=>o.v===r.condizioniMeteo)?.l||r.condizioniMeteo}</div>
+                      <div style={{fontSize:11,color:"#64748b",whiteSpace:"nowrap"}}>{r.orarioInizio} – {r.orarioFine}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 
@@ -1328,6 +1454,22 @@ function FleetCover() {
               <button onClick={()=>setShowFormRifornimento(false)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
             </div>
             <FormRifornimento mezzi={mezzi} mezzoBloccato={mezzoRifSelezionato} onSalva={salvaNuovoRifornimento} onClose={()=>setShowFormRifornimento(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* MODAL NUOVO RAPPORTINO */}
+      {showFormRapportino && (
+        <div className="mo" onClick={()=>setShowFormRapportino(false)}>
+          <div className="md md-wide" onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#f97316"}}>➕ NUOVO RAPPORTINO</div>
+                <div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>Rapporto giornaliero cantiere</div>
+              </div>
+              <button onClick={()=>setShowFormRapportino(false)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+            </div>
+            <FormRapportino onSalva={salvaNuovoRapportino} onClose={()=>setShowFormRapportino(false)} />
           </div>
         </div>
       )}
