@@ -1633,7 +1633,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         h.push('<div style="text-align:right;font-size:11px;color:#64748b">');
         h.push('<strong style="display:block;font-size:13px;color:#111">SCHEDA MEZZO</strong>');
         h.push(oggi.toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"})+'</div></div>');
-        h.push('<h2>'+m.icon+' '+m.nome+'</h2>');
+        h.push('<h2>'+m.icon+' '+m.nome+(m.targa ? ' - Targa: '+m.targa : '')+'</h2>');
         h.push('<span class="sb" style="background:#dbeafe;color:#1e3a8a">'+m.cat+'</span>');
         h.push('<span class="sb" style="background:'+sc[m.stato]+'22;color:'+sc[m.stato]+'">'+sl[m.stato]+'</span>');
         h.push('<p style="font-size:12px;color:#64748b;margin-bottom:16px;font-style:italic">'+m.desc+'</p>');
