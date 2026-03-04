@@ -321,6 +321,152 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
   );
 }
 
+const ICONE_MEZZO = ["🚛","🚐","🚜","🚚","🏗️","🦾","🛞","🏋️"];
+
+function FormAggiungiMezzo({ onSalva, onClose }) {
+  const [nome, setNome] = useState("");
+  const [cat, setCat] = useState("Edilizia");
+  const [icon, setIcon] = useState("🚛");
+  const [desc, setDesc] = useState("");
+  const [stato, setStato] = useState("deposito");
+  const [nomeCantiere, setNomeCantiere] = useState("");
+  const [dataInizioCantiere, setDataInizioCantiere] = useState(oggi());
+  const [revisione, setRevisione] = useState("");
+  const [assicurazione, setAssicurazione] = useState("");
+  const [bollo, setBollo] = useState("");
+  const [carburante, setCarburante] = useState(0);
+  const [errori, setErrori] = useState({});
+  const [salvato, setSalvato] = useState(false);
+
+  const setErr = (k, v) => setErrori(e=>({...e,[k]:v}));
+
+  const handleConferma = () => {
+    const e = {};
+    if (!nome.trim()) e.nome = "Inserisci il nome del mezzo";
+    if (stato === "cantiere" && !nomeCantiere.trim()) e.nomeCantiere = "Inserisci il nome del cantiere";
+    if (!revisione) e.revisione = "Obbligatorio";
+    if (!assicurazione) e.assicurazione = "Obbligatorio";
+    if (!bollo) e.bollo = "Obbligatorio";
+    setErrori(e);
+    if (Object.keys(e).length) return;
+
+    const nuovo = {
+      nome: nome.trim(),
+      cat,
+      icon,
+      desc: desc.trim() || "",
+      stato,
+      revisione,
+      assicurazione,
+      bollo,
+      carburante: Number(carburante) || 0,
+      guastiAperti: 0,
+    };
+    if (stato === "cantiere") {
+      nuovo.sito = nomeCantiere.trim();
+      nuovo.inCantiereDa = dataInizioCantiere;
+    }
+    onSalva(nuovo);
+    setSalvato(true);
+    setTimeout(() => { setSalvato(false); onClose(); }, 1500);
+  };
+
+  const inp = (campo) => ({
+    width:"100%", background:"#060810", border:`1px solid ${errori[campo]?"#ef4444":"#1a2440"}`,
+    borderRadius:8, padding:"9px 12px", color:"#e2e8f0", fontFamily:"inherit", fontSize:12, outline:"none",
+  });
+  const lbl = { fontSize:10, color:"#94a3b8", marginBottom:5, display:"block", letterSpacing:.5, textTransform:"uppercase" };
+  const err = { fontSize:10, color:"#ef4444", marginTop:4 };
+
+  if (salvato) {
+    return (
+      <div style={{padding:40,textAlign:"center"}}>
+        <div style={{fontSize:40,marginBottom:12}}>✅</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#22c55e",letterSpacing:2}}>MEZZO AGGIUNTO</div>
+        <div style={{fontSize:12,color:"#64748b",marginTop:6}}>Il nuovo mezzo è stato registrato</div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:20}}>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>Nome mezzo</label>
+        <input type="text" value={nome} onChange={e=>{setNome(e.target.value);setErr("nome","");}} placeholder="Es. Autocarro Scarrabile"
+          style={inp("nome")} />
+        {errori.nome&&<div style={err}>⚠ {errori.nome}</div>}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>Categoria</label>
+          <select value={cat} onChange={e=>setCat(e.target.value)} style={{...inp(""),cursor:"pointer"}}>
+            {categorie.map(c=><option key={c} value={c}>{catIcon[c]} {c}</option>)}
+          </select>
+        </div>
+        <div>
+          <label style={lbl}>Icona</label>
+          <select value={icon} onChange={e=>setIcon(e.target.value)} style={{...inp(""),cursor:"pointer",fontSize:18}}>
+            {ICONE_MEZZO.map(i=><option key={i} value={i}>{i}</option>)}
+          </select>
+        </div>
+      </div>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>Descrizione (opzionale)</label>
+        <textarea value={desc} onChange={e=>setDesc(e.target.value)} rows={2} placeholder="Breve descrizione del mezzo"
+          style={{...inp(""),resize:"vertical"}} />
+      </div>
+      <div style={{marginBottom:14}}>
+        <label style={lbl}>Stato</label>
+        <select value={stato} onChange={e=>{setStato(e.target.value);setErr("nomeCantiere","");}} style={{...inp(""),cursor:"pointer"}}>
+          <option value="cantiere">Cantiere</option>
+          <option value="deposito">Deposito</option>
+          <option value="officina">Officina</option>
+        </select>
+      </div>
+      {stato==="cantiere"&&(
+        <>
+          <div style={{marginBottom:10}}>
+            <label style={lbl}>Nome cantiere</label>
+            <input type="text" value={nomeCantiere} onChange={e=>{setNomeCantiere(e.target.value);setErr("nomeCantiere","");}}
+              placeholder="Centrale Termoelettrica - San Giovanni a Teduccio - Napoli" style={inp("nomeCantiere")} />
+            {errori.nomeCantiere&&<div style={err}>⚠ {errori.nomeCantiere}</div>}
+          </div>
+          <div style={{marginBottom:14}}>
+            <label style={lbl}>Data inizio cantiere</label>
+            <input type="date" value={dataInizioCantiere} onChange={e=>setDataInizioCantiere(e.target.value)}
+              style={{...inp(""),width:"auto",colorScheme:"dark"}} />
+          </div>
+        </>
+      )}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>Revisione</label>
+          <input type="date" value={revisione} onChange={e=>{setRevisione(e.target.value);setErr("revisione","");}} style={{...inp("revisione"),width:"100%",colorScheme:"dark"}} />
+          {errori.revisione&&<div style={err}>⚠ {errori.revisione}</div>}
+        </div>
+        <div>
+          <label style={lbl}>Assicurazione</label>
+          <input type="date" value={assicurazione} onChange={e=>{setAssicurazione(e.target.value);setErr("assicurazione","");}} style={{...inp("assicurazione"),width:"100%",colorScheme:"dark"}} />
+          {errori.assicurazione&&<div style={err}>⚠ {errori.assicurazione}</div>}
+        </div>
+        <div>
+          <label style={lbl}>Bollo</label>
+          <input type="date" value={bollo} onChange={e=>{setBollo(e.target.value);setErr("bollo","");}} style={{...inp("bollo"),width:"100%",colorScheme:"dark"}} />
+          {errori.bollo&&<div style={err}>⚠ {errori.bollo}</div>}
+        </div>
+      </div>
+      <div style={{marginBottom:18}}>
+        <label style={lbl}>Carburante mese (L) — opzionale</label>
+        <input type="number" min={0} value={carburante} onChange={e=>setCarburante(e.target.value||0)} style={{...inp(""),width:"120px"}} />
+      </div>
+      <div style={{display:"flex",gap:9}}>
+        <button onClick={handleConferma} style={{flex:1,padding:"9px 14px",borderRadius:8,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:700,background:"#f97316",color:"#fff"}}>✅ Aggiungi mezzo</button>
+        <button onClick={onClose} style={{padding:"9px 14px",borderRadius:8,border:"1px solid #1a2440",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,background:"#0f1422",color:"#94a3b8"}}>Annulla</button>
+      </div>
+    </div>
+  );
+}
+
 // ── COMPONENTE PRINCIPALE ────────────────────────────────────────────────────
 function FleetCover() {
   const [mezzi, setMezzi] = useState(mezziIniziali);
@@ -337,6 +483,7 @@ function FleetCover() {
   const [mezzoPreselezionato, setMezzoPreselezionato] = useState(null);
   const [showEditMezzo, setShowEditMezzo] = useState(false);
   const [mezzoInModifica, setMezzoInModifica] = useState(null);
+  const [showFormAggiungiMezzo, setShowFormAggiungiMezzo] = useState(false);
   // ← AGGIUNGI QUESTE DUE RIGHE QUI
 window.__mezzoSel = mezzoSel;
 window.__operatore = operatore;
@@ -369,6 +516,12 @@ window.__operatore = operatore;
   setMezzoSel(mezzoAgg);
   setMezzoInModifica(mezzoAgg);
 };
+
+  const salvaNuovoMezzo = (dati) => {
+    const nuovoId = mezzi.length ? Math.max(...mezzi.map(m=>m.id)) + 1 : 1;
+    const nuovo = { ...dati, id: nuovoId, guastiAperti: 0 };
+    setMezzi(prev => [...prev, nuovo]);
+  };
 
   const salvaNuovoGuasto = (dati) => {
     const nuovoId = Math.max(...guastiLog.map(g=>g.id)) + 1;
@@ -595,7 +748,7 @@ window.__operatore = operatore;
                   <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2}}>PARCO MEZZI</h1>
                   <p style={{color:"#64748b",fontSize:11}}>{mezzi.length} veicoli registrati</p>
                 </div>
-                <button className="btn bto">+ Aggiungi Mezzo</button>
+                <button className="btn bto" onClick={()=>setShowFormAggiungiMezzo(true)}>+ Aggiungi Mezzo</button>
               </div>
               <div style={{borderBottom:"1px solid #1a2440",marginBottom:12,display:"flex",gap:2,flexWrap:"wrap"}}>
                 <button
@@ -874,6 +1027,22 @@ window.__operatore = operatore;
   onSalva={salvaMezzoModificato}
   onClose={()=>{setShowEditMezzo(false);setMezzoInModifica(null);}}
 />
+          </div>
+        </div>
+      )}
+
+      {/* MODAL AGGIUNGI MEZZO */}
+      {showFormAggiungiMezzo && (
+        <div className="mo" onClick={()=>setShowFormAggiungiMezzo(false)}>
+          <div className="md md-wide" onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#f97316"}}>➕ AGGIUNGI MEZZO</div>
+                <div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>Nuovo veicolo nel parco mezzi</div>
+              </div>
+              <button onClick={()=>setShowFormAggiungiMezzo(false)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+            </div>
+            <FormAggiungiMezzo onSalva={salvaNuovoMezzo} onClose={()=>setShowFormAggiungiMezzo(false)} />
           </div>
         </div>
       )}
