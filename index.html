@@ -375,6 +375,149 @@ function EditMezzoForm({ mezzo, onSalva, onClose }) {
 
 const ICONE_MEZZO = ["🚛","🚐","🚜","🚚","🏗️","🦾","🛞","🏋️"];
 
+function FormRifornimento({ mezzi, mezzoBloccato, onSalva, onClose }) {
+  const [data, setData] = useState(oggi());
+  const [mezzoId, setMezzoId] = useState(mezzoBloccato ? String(mezzoBloccato.id) : "");
+  const [litri, setLitri] = useState("");
+  const [spesa, setSpesa] = useState("");
+  const [km, setKm] = useState("");
+  const [operatore, setOperatore] = useState("");
+  const [errori, setErrori] = useState({});
+  const [salvato, setSalvato] = useState(false);
+
+  const setErr = (k, v) => setErrori(e=>({...e,[k]:v}));
+
+  const handleSalva = () => {
+    const e = {};
+    if (!data) e.data = "Obbligatorio";
+    if (!mezzoId) e.mezzoId = "Seleziona un mezzo";
+    if (!litri || Number(litri) <= 0) e.litri = "Inserisci i litri";
+    if (!spesa || Number(spesa) <= 0) e.spesa = "Inserisci la spesa";
+    if (!km || Number(km) <= 0) e.km = "Inserisci i km";
+    if (!operatore.trim()) e.operatore = "Inserisci l'operatore";
+    setErrori(e);
+    if (Object.keys(e).length) return;
+
+    onSalva({
+      data,
+      mezzoId: Number(mezzoId),
+      litri: Number(litri),
+      spesa: Number(spesa),
+      km: Number(km),
+      operatore: operatore.trim(),
+    });
+    setSalvato(true);
+    setTimeout(() => { setSalvato(false); onClose(); }, 1400);
+  };
+
+  const inp = (campo) => ({
+    width:"100%", background:"#060810", border:`1px solid ${errori[campo]?"#ef4444":"#1a2440"}`,
+    borderRadius:8, padding:"9px 12px", color:"#e2e8f0", fontFamily:"inherit", fontSize:12, outline:"none",
+  });
+  const lbl = { fontSize:10, color:"#94a3b8", marginBottom:5, display:"block", letterSpacing:.5, textTransform:"uppercase" };
+  const err = { fontSize:10, color:"#ef4444", marginTop:4 };
+
+  if (salvato) {
+    return (
+      <div style={{padding:40,textAlign:"center"}}>
+        <div style={{fontSize:40,marginBottom:12}}>✅</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#22c55e",letterSpacing:2}}>RIFORNIMENTO REGISTRATO</div>
+        <div style={{fontSize:12,color:"#64748b",marginTop:6}}>Dati rifornimento salvati correttamente</div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:20}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1.4fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>📅 Data</label>
+          <input
+            type="date"
+            value={data}
+            onChange={e=>{setData(e.target.value);setErr("data","");}}
+            style={{...inp("data"),colorScheme:"dark"}}
+          />
+          {errori.data&&<div style={err}>⚠ {errori.data}</div>}
+        </div>
+        <div>
+          <label style={lbl}>🚛 Mezzo</label>
+          <select
+            value={mezzoId}
+            onChange={e=>{setMezzoId(e.target.value);setErr("mezzoId","");}}
+            disabled={!!mezzoBloccato}
+            style={{...inp("mezzoId"),cursor:mezzoBloccato?"not-allowed":"pointer",opacity:mezzoBloccato?0.7:1}}
+          >
+            <option value="">— Seleziona mezzo —</option>
+            {mezzi.map(m=>(
+              <option key={m.id} value={m.id}>
+                {m.icon} {m.nome}{m.targa ? " ("+m.targa+")" : ""}
+              </option>
+            ))}
+          </select>
+          {errori.mezzoId&&<div style={err}>⚠ {errori.mezzoId}</div>}
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:14}}>
+        <div>
+          <label style={lbl}>⛽ Litri</label>
+          <input
+            type="number"
+            min={0}
+            value={litri}
+            onChange={e=>{setLitri(e.target.value);setErr("litri","");}}
+            placeholder="Es. 45"
+            style={inp("litri")}
+          />
+          {errori.litri&&<div style={err}>⚠ {errori.litri}</div>}
+        </div>
+        <div>
+          <label style={lbl}>💶 Spesa €</label>
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            value={spesa}
+            onChange={e=>{setSpesa(e.target.value);setErr("spesa","");}}
+            placeholder="Es. 95.50"
+            style={inp("spesa")}
+          />
+          {errori.spesa&&<div style={err}>⚠ {errori.spesa}</div>}
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1.4fr",gap:12,marginBottom:18}}>
+        <div>
+          <label style={lbl}>📏 Km al rifornimento</label>
+          <input
+            type="number"
+            min={0}
+            value={km}
+            onChange={e=>{setKm(e.target.value);setErr("km","");}}
+            placeholder="Es. 124500"
+            style={inp("km")}
+          />
+          {errori.km&&<div style={err}>⚠ {errori.km}</div>}
+        </div>
+        <div>
+          <label style={lbl}>👤 Operatore</label>
+          <input
+            type="text"
+            value={operatore}
+            onChange={e=>{setOperatore(e.target.value);setErr("operatore","");}}
+            placeholder="Es. D01 · Gino Manno"
+            style={inp("operatore")}
+          />
+          {errori.operatore&&<div style={err}>⚠ {errori.operatore}</div>}
+        </div>
+      </div>
+      <div style={{display:"flex",gap:9}}>
+        <button onClick={handleSalva} style={{flex:1,padding:"9px 14px",borderRadius:8,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:700,background:"#f97316",color:"#fff"}}>✅ Salva rifornimento</button>
+        <button onClick={onClose} style={{padding:"9px 14px",borderRadius:8,border:"1px solid #1a2440",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,background:"#0f1422",color:"#94a3b8"}}>Annulla</button>
+      </div>
+    </div>
+  );
+}
+
 function FormAggiungiMezzo({ onSalva, onClose }) {
   const [nome, setNome] = useState("");
   const [targa, setTarga] = useState("");
@@ -536,6 +679,7 @@ function FormAggiungiMezzo({ onSalva, onClose }) {
 function FleetCover() {
   const [mezzi, setMezzi] = useState(mezziIniziali);
   const [guastiLog, setGuastiLog] = useState(guastiIniziali);
+  const [rifornimenti, setRifornimenti] = useState([]);
   const [vista, setVista] = useState("dashboard");
   const [catAttiva, setCatAttiva] = useState("Edilizia");
   const [filtroStato, setFiltroStato] = useState("tutti");
@@ -549,6 +693,9 @@ function FleetCover() {
   const [showEditMezzo, setShowEditMezzo] = useState(false);
   const [mezzoInModifica, setMezzoInModifica] = useState(null);
   const [showFormAggiungiMezzo, setShowFormAggiungiMezzo] = useState(false);
+  const [showFormRifornimento, setShowFormRifornimento] = useState(false);
+  const [mezzoRifDettaglio, setMezzoRifDettaglio] = useState(null);
+  const [mezzoRifSelezionato, setMezzoRifSelezionato] = useState(null);
   window.__mezzoSel = mezzoSel;
   window.__operatore = operatore;
   window.__guastiLog = guastiLog;
@@ -570,6 +717,32 @@ function FleetCover() {
     {mezzo:m.nome,mezzoId:m.id,tipo:"Bollo",data:m.bollo,icon:"📋"},
   ]).filter(s=>giorniMancanti(s.data)>=0).sort((a,b)=>new Date(a.data)-new Date(b.data));
 
+  const oggiData = new Date();
+  const meseCorrente = oggiData.getMonth();
+  const annoCorrente = oggiData.getFullYear();
+  const rifMese = rifornimenti.filter(r => {
+    const d = new Date(r.data);
+    return !isNaN(d) && d.getMonth()===meseCorrente && d.getFullYear()===annoCorrente;
+  });
+  const rifAnno = rifornimenti.filter(r => {
+    const d = new Date(r.data);
+    return !isNaN(d) && d.getFullYear()===annoCorrente;
+  });
+  const totLitriMese = rifMese.reduce((s,r)=>s+(Number(r.litri)||0),0);
+  const totSpesaMese = rifMese.reduce((s,r)=>s+(Number(r.spesa)||0),0);
+  const totLitriAnno = rifAnno.reduce((s,r)=>s+(Number(r.litri)||0),0);
+  const totSpesaAnno = rifAnno.reduce((s,r)=>s+(Number(r.spesa)||0),0);
+  const rifMesePerMezzoMap = {};
+  rifMese.forEach(r=>{
+    const id = r.mezzoId;
+    if (!rifMesePerMezzoMap[id]) rifMesePerMezzoMap[id] = { mezzoId:id, litri:0, spesa:0, count:0 };
+    rifMesePerMezzoMap[id].litri += Number(r.litri)||0;
+    rifMesePerMezzoMap[id].spesa += Number(r.spesa)||0;
+    rifMesePerMezzoMap[id].count += 1;
+  });
+  const rifMesePerMezzo = Object.values(rifMesePerMezzoMap);
+  const maxLitriPerMezzo = rifMesePerMezzo.length ? Math.max(...rifMesePerMezzo.map(x=>x.litri)) : 0;
+
   const apriFormGuasto = (mezzo=null) => {
     setMezzoPreselezionato(mezzo);
     setShowFormGuasto(true);
@@ -586,6 +759,12 @@ function FleetCover() {
     const nuovoId = mezzi.length ? Math.max(...mezzi.map(m=>m.id)) + 1 : 1;
     const nuovo = { ...dati, id: nuovoId, guastiAperti: 0 };
     setMezzi(prev => [...prev, nuovo]);
+  };
+
+  const salvaNuovoRifornimento = (dati) => {
+    const nuovoId = rifornimenti.length ? Math.max(...rifornimenti.map(r=>r.id)) + 1 : 1;
+    const nuovo = { ...dati, id: nuovoId };
+    setRifornimenti(prev => [...prev, nuovo]);
   };
 
   const salvaNuovoGuasto = (dati) => {
@@ -955,46 +1134,60 @@ function FleetCover() {
           {/* CARBURANTE */}
           {vista==="carburante"&&(
             <div>
-              <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>CARBURANTE</h1>
-              <p style={{color:"#64748b",fontSize:11,marginBottom:16}}>Consumo mensile — Marzo 2025</p>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
-                {[
-                  {l:"Totale Litri",v:mezzi.reduce((a,m)=>a+m.carburante,0)+" L",c:"#f97316"},
-                  {l:"Costo Stimato",v:"€ "+(mezzi.reduce((a,m)=>a+m.carburante,0)*1.75).toFixed(0),c:"#22c55e"},
-                  {l:"Mezzi Riforniti",v:mezzi.filter(m=>m.carburante>0).length,c:"#3b82f6"}
-                ].map(s=>(
-                  <div key={s.l} style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:10,padding:14,borderTop:"3px solid "+s.c}}>
-                    <div style={{fontSize:10,color:"#94a3b8",marginBottom:3}}>{s.l}</div>
-                    <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:30,color:s.c,lineHeight:1}}>{s.v}</div>
-                  </div>
-                ))}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+                <div>
+                  <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:2,marginBottom:2}}>CARBURANTE</h1>
+                  <p style={{color:"#64748b",fontSize:11,marginBottom:0}}>Consumo mensile — Marzo 2025</p>
+                </div>
+                <button className="btn bto" onClick={()=>{setMezzoRifSelezionato(null);setShowFormRifornimento(true);}}>➕ Aggiungi Rifornimento</button>
               </div>
-              {categorie.map(cat=>{
-                const mc=mezzi.filter(m=>m.cat===cat&&m.carburante>0);
-                if(!mc.length) return null;
-                const maxL=Math.max(...mezzi.filter(m=>m.carburante>0).map(m=>m.carburante));
-                return(
-                  <div key={cat} style={{marginBottom:18}}>
-                    <h3 style={{fontSize:11,fontWeight:700,color:catColore[cat],marginBottom:9}}>{catIcon[cat]} {cat}</h3>
-                    {mc.sort((a,b)=>b.carburante-a.carburante).map(m=>(
-                      <div key={m.id} style={{background:"#0f1422",borderRadius:8,padding:"10px 12px",marginBottom:6,border:"1px solid #1a2440"}}>
-                        <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-                          <div style={{fontWeight:600,fontSize:11,color:"#e2e8f0",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1}}>
-                            {m.nome}{m.targa && <span style={{fontSize:12,color:"#94a3b8",marginLeft:6}}>- Targa: {m.targa}</span>}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:12,marginBottom:18}}>
+                <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 11px"}}>
+                  <div style={{fontSize:12,color:"#94a3b8",marginBottom:3}}>Totale litri mese corrente</div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:"#f97316"}}>{totLitriMese} L</div>
+                </div>
+                <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 11px"}}>
+                  <div style={{fontSize:12,color:"#94a3b8",marginBottom:3}}>Totale spesa mese corrente</div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:"#22c55e"}}>€ {totSpesaMese.toFixed(2)}</div>
+                </div>
+                <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 11px"}}>
+                  <div style={{fontSize:12,color:"#94a3b8",marginBottom:3}}>Totale litri anno corrente</div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:"#3b82f6"}}>{totLitriAnno} L</div>
+                </div>
+                <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 11px"}}>
+                  <div style={{fontSize:12,color:"#94a3b8",marginBottom:3}}>Totale spesa anno corrente</div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:28,color:"#eab308"}}>€ {totSpesaAnno.toFixed(2)}</div>
+                </div>
+              </div>
+              {rifMesePerMezzo.length>0 && (
+                <div style={{marginTop:8}}>
+                  <h3 style={{fontSize:11,fontWeight:700,color:"#94a3b8",marginBottom:9}}>Rifornimenti per mezzo — mese corrente</h3>
+                  {rifMesePerMezzo.slice().sort((a,b)=>b.litri-a.litri).map(rm=>{
+                    const m = mezzi.find(mx=>mx.id===rm.mezzoId);
+                    const perc = maxLitriPerMezzo ? (rm.litri/maxLitriPerMezzo*100) : 0;
+                    return (
+                      <div
+                        key={rm.mezzoId}
+                        style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:10,padding:"10px 12px",marginBottom:6,cursor:"pointer"}}
+                        onClick={()=>{ if(m){ setMezzoRifDettaglio(m); } }}
+                      >
+                        <div style={{display:"flex",justifyContent:"space-between",marginBottom:4,flexWrap:"wrap",gap:6}}>
+                          <div style={{fontWeight:600,fontSize:12,color:"#e2e8f0"}}>
+                            {m ? m.nome : "Mezzo ID "+rm.mezzoId}
+                            {m && m.targa && <span style={{fontSize:12,color:"#94a3b8",marginLeft:6}}>- Targa: {m.targa}</span>}
                           </div>
-                          <div style={{flexShrink:0,marginLeft:10}}>
-                            <span style={{fontWeight:700,color:"#f97316",fontSize:12}}>{m.carburante}L</span>
-                            <span style={{fontSize:10,color:"#64748b",marginLeft:7}}>€{(m.carburante*1.75).toFixed(0)}</span>
+                          <div style={{fontSize:11,color:"#94a3b8"}}>
+                            ⛽ {rm.litri} L · 💶 € {rm.spesa.toFixed(2)} · {rm.count} rif.
                           </div>
                         </div>
                         <div style={{background:"#0a0c14",borderRadius:3,height:4,overflow:"hidden"}}>
-                          <div style={{width:(m.carburante/maxL*100)+"%",height:"100%",background:catColore[cat],borderRadius:3}}/>
+                          <div style={{width:(perc||0)+"%",height:"100%",background:"#f97316",borderRadius:3}}/>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
@@ -1045,7 +1238,16 @@ function FleetCover() {
                   {label:"Revisione",v:formatData(mezzoSel.revisione),g:giorniMancanti(mezzoSel.revisione),icon:"🔍"},
                   {label:"Assicurazione",v:formatData(mezzoSel.assicurazione),g:giorniMancanti(mezzoSel.assicurazione),icon:"🛡️"},
                   {label:"Bollo",v:formatData(mezzoSel.bollo),g:giorniMancanti(mezzoSel.bollo),icon:"📋"},
-                  {label:"Carburante mese",v:mezzoSel.carburante>0?mezzoSel.carburante+" L":"— (elettrico/rim.)",g:null,icon:"⛽"}
+                  {label:"Carburante mese",v:(() => {
+                    const litri = rifornimenti.reduce((s,r)=>{
+                      const d = new Date(r.data);
+                      if (r.mezzoId===mezzoSel.id && !isNaN(d) && d.getMonth()===meseCorrente && d.getFullYear()===annoCorrente) {
+                        return s + (Number(r.litri)||0);
+                      }
+                      return s;
+                    },0);
+                    return litri>0 ? litri+" L" : "—";
+                  })(),g:null,icon:"⛽"}
                 ].map(info=>(
                   <div key={info.label} style={{background:"#0a0c14",borderRadius:8,padding:11,border:"1px solid #1a2440"}}>
                     <div style={{fontSize:9,color:"#64748b",marginBottom:3}}>{info.icon} {info.label}</div>
@@ -1114,6 +1316,22 @@ function FleetCover() {
         </div>
       )}
 
+      {/* MODAL AGGIUNGI RIFORNIMENTO */}
+      {showFormRifornimento && (
+        <div className="mo" onClick={()=>setShowFormRifornimento(false)}>
+          <div className="md md-wide" onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#f97316"}}>➕ AGGIUNGI RIFORNIMENTO</div>
+                <div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>Registra un nuovo rifornimento carburante</div>
+              </div>
+              <button onClick={()=>setShowFormRifornimento(false)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+            </div>
+            <FormRifornimento mezzi={mezzi} mezzoBloccato={mezzoRifSelezionato} onSalva={salvaNuovoRifornimento} onClose={()=>setShowFormRifornimento(false)} />
+          </div>
+        </div>
+      )}
+
       {/* MODAL AGGIUNGI MEZZO */}
       {showFormAggiungiMezzo && (
         <div className="mo" onClick={()=>setShowFormAggiungiMezzo(false)}>
@@ -1126,6 +1344,89 @@ function FleetCover() {
               <button onClick={()=>setShowFormAggiungiMezzo(false)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
             </div>
             <FormAggiungiMezzo onSalva={salvaNuovoMezzo} onClose={()=>setShowFormAggiungiMezzo(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DETTAGLIO RIFORNIMENTI MEZZO */}
+      {mezzoRifDettaglio && (
+        <div className="mo" onClick={()=>setMezzoRifDettaglio(null)}>
+          <div className="md md-wide" onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{fontSize:20,width:32,height:32,background:"#0a0c14",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid #1a2440"}}>
+                  {mezzoRifDettaglio.icon}
+                </div>
+                <div>
+                  <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#e5e7eb"}}>
+                    {mezzoRifDettaglio.nome}{mezzoRifDettaglio.targa && <span style={{fontSize:12,color:"#94a3b8",marginLeft:6}}>- Targa: {mezzoRifDettaglio.targa}</span>}
+                  </div>
+                  <div style={{fontSize:10,color:"#64748b",marginTop:2}}>Rifornimenti mese corrente</div>
+                </div>
+              </div>
+              <button onClick={()=>setMezzoRifDettaglio(null)} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+            </div>
+            <div style={{padding:18,maxHeight:480,overflowY:"auto"}}>
+              {(() => {
+                const lista = rifornimenti
+                  .slice()
+                  .sort((a,b)=>new Date(b.data)-new Date(a.data))
+                  .filter(r=>r.mezzoId===mezzoRifDettaglio.id);
+                const meseList = lista.filter(r=>{
+                  const d = new Date(r.data);
+                  return !isNaN(d) && d.getMonth()===meseCorrente && d.getFullYear()===annoCorrente;
+                });
+                const meseSort = meseList.slice().sort((a,b)=>new Date(a.data)-new Date(b.data));
+                const totLitri = meseList.reduce((s,r)=>s+(Number(r.litri)||0),0);
+                const totSpesa = meseList.reduce((s,r)=>s+(Number(r.spesa)||0),0);
+                const totKm = meseSort.length>=2 ? (Number(meseSort[meseSort.length-1].km)||0)-(Number(meseSort[0].km)||0) : 0;
+                return (
+                  <>
+                    {lista.length===0 ? (
+                      <div style={{fontSize:11,color:"#64748b",marginBottom:12}}>Nessun rifornimento registrato per questo mezzo.</div>
+                    ) : (
+                      <div style={{marginBottom:14}}>
+                        {lista.map(r=>(
+                          <div key={r.id} style={{background:"#0f1422",border:"1px solid #1a2440",borderRadius:9,padding:"8px 10px",marginBottom:6}}>
+                            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#94a3b8",marginBottom:3,flexWrap:"wrap",gap:6}}>
+                              <span>📅 {formatData(r.data)}</span>
+                              <span>👤 {r.operatore}</span>
+                            </div>
+                            <div style={{display:"flex",gap:14,fontSize:11,color:"#cbd5f5",flexWrap:"wrap"}}>
+                              <span>⛽ <strong style={{color:"#e2e8f0"}}>{r.litri}</strong> L</span>
+                              <span>💶 <strong style={{color:"#e2e8f0"}}>€ {Number(r.spesa).toFixed(2)}</strong></span>
+                              <span>📏 <strong style={{color:"#e2e8f0"}}>{r.km}</strong> km</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
+                      <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"8px 10px"}}>
+                        <div style={{fontSize:10,color:"#94a3b8",marginBottom:2}}>Totale litri mese</div>
+                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#f97316"}}>{totLitri} L</div>
+                      </div>
+                      <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"8px 10px"}}>
+                        <div style={{fontSize:10,color:"#94a3b8",marginBottom:2}}>Totale spesa mese</div>
+                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#22c55e"}}>€ {totSpesa.toFixed(2)}</div>
+                      </div>
+                      <div style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"8px 10px"}}>
+                        <div style={{fontSize:10,color:"#94a3b8",marginBottom:2}}>Km percorsi mese</div>
+                        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#3b82f6"}}>{totKm} km</div>
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <button
+                        className="btn bto"
+                        onClick={()=>{ setMezzoRifSelezionato(mezzoRifDettaglio); setShowFormRifornimento(true); setMezzoRifDettaglio(null); }}
+                      >
+                        ➕ Aggiungi Rifornimento
+                      </button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
           </div>
         </div>
       )}
