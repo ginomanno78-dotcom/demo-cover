@@ -212,6 +212,115 @@ function FormGuasto({ mezzoPreselezionato, tuttiMezzi, operatore, onSalva, onClo
   );
 }
 
+function EditMezzoForm({ mezzo, onSalva, onClose }) {
+  const [stato, setStato] = useState(mezzo?.stato || "cantiere");
+  const [nomeCantiere, setNomeCantiere] = useState(mezzo?.cantierAttuale?.nome || "");
+  const [dataInizio, setDataInizio] = useState(mezzo?.cantierAttuale?.dataInizio || oggi());
+  const [motivoOfficina, setMotivoOfficina] = useState(mezzo?.motivoOfficina || "");
+  const [erroreCantiere, setErroreCantiere] = useState("");
+  const [salvato, setSalvato] = useState(false);
+
+  const handleConferma = () => {
+    if (stato === "cantiere" && !nomeCantiere.trim()) {
+      setErroreCantiere("Inserisci il nome del cantiere");
+      return;
+    }
+    const modifiche = { stato };
+    if (stato === "cantiere") {
+      modifiche.cantierAttuale = { nome: nomeCantiere.trim(), dataInizio };
+    } else {
+      modifiche.cantierAttuale = null;
+    }
+    if (stato === "officina" && motivoOfficina.trim()) {
+      modifiche.motivoOfficina = motivoOfficina.trim();
+    }
+    const mezzoAggiornato = { ...mezzo, ...modifiche };
+    onSalva(mezzoAggiornato);
+    setSalvato(true);
+    setTimeout(()=>{ setSalvato(false); onClose(); },1500);
+  };
+
+  if (salvato) {
+    return (
+      <div style={{padding:40,textAlign:"center"}}>
+        <div style={{fontSize:40,marginBottom:12}}>✅</div>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,color:"#22c55e",letterSpacing:2}}>DATI MEZZO AGGIORNATI</div>
+        <div style={{fontSize:12,color:"#64748b",marginTop:6}}>Le modifiche sono state salvate</div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:20}}>
+      <div style={{marginBottom:14}}>
+        <div style={{fontSize:11,color:"#94a3b8",marginBottom:6,letterSpacing:.5,textTransform:"uppercase"}}>Stato mezzo</div>
+        <select
+          value={stato}
+          onChange={e=>{setStato(e.target.value);setErroreCantiere("");}}
+          style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:13,cursor:"pointer"}}
+        >
+          <option value="cantiere">Cantiere</option>
+          <option value="deposito">Deposito</option>
+          <option value="officina">Officina</option>
+        </select>
+      </div>
+
+      {stato==="cantiere"&&(
+        <>
+          <div style={{marginBottom:10}}>
+            <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>Nome cantiere</div>
+            <input
+              type="text"
+              value={nomeCantiere}
+              onChange={e=>{setNomeCantiere(e.target.value);setErroreCantiere("");}}
+              placeholder="Centrale Termoelettrica - San Giovanni a Teduccio - Napoli"
+              style={{width:"100%",background:"#060810",border:`1px solid ${erroreCantiere?"#ef4444":"#1a2440"}`,borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12}}
+            />
+            {erroreCantiere&&<div style={{fontSize:10,color:"#ef4444",marginTop:4}}>⚠ {erroreCantiere}</div>}
+          </div>
+          <div style={{marginBottom:14}}>
+            <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>Data inizio</div>
+            <input
+              type="date"
+              value={dataInizio}
+              onChange={e=>setDataInizio(e.target.value)}
+              style={{background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"7px 10px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12,colorScheme:"dark"}}
+            />
+          </div>
+        </>
+      )}
+
+      {stato==="officina"&&(
+        <div style={{marginBottom:14}}>
+          <div style={{fontSize:11,color:"#94a3b8",marginBottom:4,letterSpacing:.5,textTransform:"uppercase"}}>Motivo officina (opzionale)</div>
+          <input
+            type="text"
+            value={motivoOfficina}
+            onChange={e=>setMotivoOfficina(e.target.value)}
+            placeholder="Es. tagliando programmato, guasto idraulico, revisione straordinaria..."
+            style={{width:"100%",background:"#060810",border:"1px solid #1a2440",borderRadius:8,padding:"9px 12px",color:"#e2e8f0",fontFamily:"inherit",fontSize:12}}
+          />
+        </div>
+      )}
+
+      <div style={{display:"flex",gap:9,marginTop:6}}>
+        <button
+          onClick={handleConferma}
+          style={{flex:1,padding:"9px 14px",borderRadius:8,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:700,background:"#f97316",color:"#fff"}}
+        >
+          ✅ Conferma
+        </button>
+        <button
+          onClick={onClose}
+          style={{padding:"9px 14px",borderRadius:8,border:"1px solid #1a2440",cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:600,background:"#0f1422",color:"#94a3b8"}}
+        >
+          Annulla
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── COMPONENTE PRINCIPALE ────────────────────────────────────────────────────
 function FleetCover() {
   const [mezzi, setMezzi] = useState(mezziIniziali);
@@ -226,6 +335,8 @@ function FleetCover() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showFormGuasto, setShowFormGuasto] = useState(false);
   const [mezzoPreselezionato, setMezzoPreselezionato] = useState(null);
+  const [showEditMezzo, setShowEditMezzo] = useState(false);
+  const [mezzoInModifica, setMezzoInModifica] = useState(null);
   // ← AGGIUNGI QUESTE DUE RIGHE QUI
 window.__mezzoSel = mezzoSel;
 window.__operatore = operatore;
@@ -251,6 +362,13 @@ window.__operatore = operatore;
     setMezzoPreselezionato(mezzo);
     setShowFormGuasto(true);
   };
+
+  const salvaMezzoModificato = (mezzoAgg) => {
+    console.log("SALVO MEZZO:", mezzoAgg);
+  setMezzi(prev => prev.map(m => m.id === mezzoAgg.id ? mezzoAgg : m));
+  setMezzoSel(mezzoAgg);
+  setMezzoInModifica(mezzoAgg);
+};
 
   const salvaNuovoGuasto = (dati) => {
     const nuovoId = Math.max(...guastiLog.map(g=>g.id)) + 1;
@@ -677,12 +795,12 @@ window.__operatore = operatore;
                 </div>
               </div>
               <span className="badge" style={{background:statoColore[mezzoSel.stato]+"18",color:statoColore[mezzoSel.stato],marginBottom:12,display:"inline-block"}}>📍 {statoLabel[mezzoSel.stato]}</span>
-              {mezzoSel.stato==="cantiere" && mezzoSel.inCantiereDa && (
+              {mezzoSel.stato==="cantiere" && mezzoSel.cantierAttuale?.dataInizio && (
                 <div style={{fontSize:11,color:"#e5e7eb",marginBottom:14,lineHeight:1.5,padding:"9px 11px",background:"#060810",borderRadius:7,border:"1px solid #1a2440"}}>
                   <div style={{fontSize:10,color:"#f97316",textTransform:"uppercase",letterSpacing:0.5,marginBottom:4}}>🏗️ Dettaglio permanenza in cantiere</div>
-                  <div style={{marginBottom:2}}>Ubicazione: <span style={{fontWeight:600}}>{mezzoSel.sito || "—"}</span></div>
-                  <div style={{marginBottom:2}}>In cantiere dal: <span style={{fontWeight:600}}>{formatData(mezzoSel.inCantiereDa)}</span></div>
-                  <div>Permanenza: <span style={{fontWeight:600}}>{giorniInCantiere(mezzoSel.inCantiereDa)} giorni</span></div>
+                  <div style={{marginBottom:2}}>Ubicazione: <span style={{fontWeight:600}}>{mezzoSel.cantierAttuale?.nome || "—"}</span></div>
+                  <div style={{marginBottom:2}}>In cantiere dal: <span style={{fontWeight:600}}>{formatData(mezzoSel.cantierAttuale?.dataInizio)}</span></div>
+                  <div>Permanenza: <span style={{fontWeight:600}}>{giorniInCantiere(mezzoSel.cantierAttuale?.dataInizio)} giorni</span></div>
                 </div>
               )}
               <div style={{fontSize:11,color:"#94a3b8",marginBottom:14,lineHeight:1.5,padding:"9px 11px",background:"#0a0c14",borderRadius:7}}>{mezzoSel.desc}</div>
@@ -707,7 +825,7 @@ window.__operatore = operatore;
                 </div>
               )}
               <div style={{marginTop:14,display:"flex",gap:9}}>
-                <button className="btn bto" style={{flex:1}}>✏️ Modifica dati</button>
+                <button className="btn bto" style={{flex:1}} onClick={()=>{setMezzoInModifica(mezzoSel);setShowEditMezzo(true);}}>✏️ Modifica dati</button>
                 <button className="btn btr" onClick={()=>{apriFormGuasto(mezzoSel);setMezzoSel(null);}}>🔧 Segnala guasto</button>
               </div>
             </div>
@@ -735,6 +853,27 @@ window.__operatore = operatore;
               onSalva={salvaNuovoGuasto}
               onClose={()=>setShowFormGuasto(false)}
             />
+          </div>
+        </div>
+      )}
+
+      {/* MODAL MODIFICA MEZZO */}
+      {showEditMezzo && mezzoInModifica&&(
+        <div className="mo" onClick={()=>{setShowEditMezzo(false);setMezzoInModifica(null);}}>
+          <div className={"md md-wide"} onClick={e=>e.stopPropagation()}>
+            <div style={{padding:"14px 18px",borderBottom:"1px solid #1a2440",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+              <div>
+                <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:2,color:"#f97316"}}>✏️ MODIFICA DATI MEZZO</div>
+                <div style={{fontSize:11,color:"#94a3b8",marginTop:2}}>{mezzoInModifica.nome}</div>
+              </div>
+              <button onClick={()=>{setShowEditMezzo(false);setMezzoInModifica(null);}} style={{background:"#1a2440",border:"none",color:"#64748b",cursor:"pointer",borderRadius:7,width:26,height:26,fontSize:13}}>✕</button>
+            </div>
+            <EditMezzoForm
+  key={mezzoInModifica.id + '-' + mezzoInModifica.stato}
+  mezzo={mezzoInModifica}
+  onSalva={salvaMezzoModificato}
+  onClose={()=>{setShowEditMezzo(false);setMezzoInModifica(null);}}
+/>
           </div>
         </div>
       )}
@@ -799,7 +938,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         h.push('<div><strong>Resp. Verrengia</strong><div style="font-size:10px;color:#94a3b8">Responsabile Parco Mezzi</div><div class="fline"></div><div class="flbl">Visto</div></div>');
         h.push('</div>');
         h.push('<div class="footer">CO.VER. SRL — Documento generato: '+oggi.toLocaleString("it-IT")+'</div>');
-        h.push('</body></html>');
+        h.push('<\/body><\/html>');
         w.document.write(h.join(''));
         w.document.close();
         setTimeout(function(){ w.print(); },400);
