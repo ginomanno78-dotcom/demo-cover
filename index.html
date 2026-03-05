@@ -35,7 +35,67 @@ const OPERATORI = [
 ];
 
 const mezziIniziali = [
-  { id:1, cat:"Edilizia", nome:"Autocarro Scarrabile", desc:"Autocarro scarrabile per trasporto inerti e materiali", stato:"cantiere", sito:"Cantiere Via Roma, Salerno", inCantiereDa:"2025-01-20", revisione:"2025-04-08", assicurazione:"2025-09-20", bollo:"2025-05-15", carburante:310, guastiAperti:0, icon:"🚛" },
+  {
+    id:1,
+    cat:"Edilizia",
+    nome:"Autocarro Scarrabile",
+    desc:"Autocarro scarrabile per trasporto inerti e materiali",
+    stato:"cantiere",
+    sito:"Cantiere Via Roma, Salerno",
+    inCantiereDa:"2025-01-20",
+    revisione:"2025-04-08",
+    assicurazione:"2025-09-20",
+    bollo:"2025-05-15",
+    carburante:310,
+    guastiAperti:0,
+    icon:"🚛",
+    jsstoricoLavori:[
+      { cantiere:"ENPLUS ENERGIA - Centrale Turbogas 400MW - San Severo (FG)", operatore:"Matteo Verrengia", dataInizio:"2016-01-01", dataFine:"2018-10-01", giorni:1004 },
+      { cantiere:"F.O.S. Prysmian - Sistemazione esterna e pavimentazione - Pozzuoli (NA)", operatore:"Jacopo Verrengia", dataInizio:"2020-05-01", dataFine:"2022-09-01", giorni:854 },
+      { cantiere:"Ferrarelle - Opere civili stabilimento - Riardo (CE)", operatore:"Gino Manno", dataInizio:"2024-02-01", dataFine:"2025-12-01", giorni:669 },
+    ],
+    storicoScadenze:[
+      { tipo:"Bollo", data:"2022-03-15", importo:850, stato:"pagato" },
+      { tipo:"Assicurazione", data:"2022-09-20", importo:2400, stato:"pagato" },
+      { tipo:"Revisione", data:"2023-04-08", importo:320, stato:"pagato" },
+      { tipo:"Bollo", data:"2023-05-15", importo:850, stato:"pagato" },
+      { tipo:"Assicurazione", data:"2023-09-20", importo:2400, stato:"pagato" },
+      { tipo:"Bollo", data:"2024-05-15", importo:850, stato:"pagato" },
+      { tipo:"Assicurazione", data:"2024-09-20", importo:2400, stato:"pagato" },
+      { tipo:"Revisione", data:"2024-04-08", importo:320, stato:"pagato" },
+      { tipo:"Bollo", data:"2025-05-15", importo:850, stato:"pagato" },
+      { tipo:"Assicurazione", data:"2025-09-20", importo:2400, stato:"pagato" },
+      { tipo:"Bollo", data:"2026-07-01", importo:850, stato:"da pagare" },
+      { tipo:"Revisione", data:"2026-04-08", importo:320, stato:"da pagare" },
+      { tipo:"Assicurazione", data:"2026-09-09", importo:2400, stato:"da pagare" },
+    ],
+    storicoRifornimenti:[
+      { data:"2025-01-10", litri:80, spesa:100, km:45000, operatore:"Gino Manno" },
+      { data:"2025-01-25", litri:80, spesa:100, km:45800, operatore:"Gino Manno" },
+      { data:"2025-02-08", litri:80, spesa:100, km:46600, operatore:"Jacopo Verrengia" },
+      { data:"2025-02-22", litri:80, spesa:100, km:47400, operatore:"Jacopo Verrengia" },
+      { data:"2025-03-05", litri:80, spesa:100, km:48200, operatore:"Gino Manno" },
+      { data:"2025-03-20", litri:80, spesa:100, km:49000, operatore:"Gino Manno" },
+      { data:"2025-04-08", litri:80, spesa:100, km:49800, operatore:"Matteo Verrengia" },
+      { data:"2025-04-22", litri:80, spesa:100, km:50600, operatore:"Matteo Verrengia" },
+      { data:"2025-05-10", litri:80, spesa:100, km:51400, operatore:"Gino Manno" },
+      { data:"2025-05-25", litri:80, spesa:100, km:52200, operatore:"Gino Manno" },
+      { data:"2025-06-08", litri:80, spesa:100, km:53000, operatore:"Jacopo Verrengia" },
+      { data:"2025-06-22", litri:80, spesa:100, km:53800, operatore:"Jacopo Verrengia" },
+      { data:"2025-07-10", litri:80, spesa:100, km:54600, operatore:"Gino Manno" },
+      { data:"2025-07-25", litri:80, spesa:100, km:55400, operatore:"Gino Manno" },
+      { data:"2025-08-08", litri:80, spesa:100, km:56200, operatore:"Matteo Verrengia" },
+      { data:"2025-08-22", litri:80, spesa:100, km:57000, operatore:"Matteo Verrengia" },
+      { data:"2025-09-10", litri:80, spesa:100, km:57800, operatore:"Gino Manno" },
+      { data:"2025-09-25", litri:80, spesa:100, km:58600, operatore:"Gino Manno" },
+      { data:"2025-10-08", litri:80, spesa:100, km:59400, operatore:"Jacopo Verrengia" },
+      { data:"2025-10-22", litri:80, spesa:100, km:60200, operatore:"Jacopo Verrengia" },
+      { data:"2025-11-10", litri:80, spesa:100, km:61000, operatore:"Gino Manno" },
+      { data:"2025-11-25", litri:80, spesa:100, km:61800, operatore:"Gino Manno" },
+      { data:"2025-12-08", litri:80, spesa:100, km:62600, operatore:"Matteo Verrengia" },
+      { data:"2025-12-22", litri:80, spesa:100, km:63400, operatore:"Matteo Verrengia" },
+    ],
+  },
   { id:2, cat:"Edilizia", nome:"Autocarro TURBO DAILY 35/E4", desc:"Autocarro leggero per trasporti urbani e logistica", stato:"deposito", revisione:"2025-03-28", assicurazione:"2025-10-05", bollo:"2025-05-01", carburante:145, guastiAperti:0, icon:"🚐" },
   { id:3, cat:"Edilizia", nome:"Rullo WACKER NEUSON RD18-80", desc:"Rullo tandem per compattazione asfalto e terreni", stato:"officina", revisione:"2025-04-02", assicurazione:"2025-08-20", bollo:"2025-05-10", carburante:0, guastiAperti:2, icon:"🛞" },
   { id:4, cat:"Movimento Terra", nome:"Mini Terna JCB 1CX HF-DW", desc:"Mini terna gommata per scavi in spazi ristretti", stato:"cantiere", sito:"Cantiere Variante SS18", inCantiereDa:"2025-02-05", revisione:"2025-06-15", assicurazione:"2025-11-10", bollo:"2025-07-01", carburante:180, guastiAperti:0, icon:"🚜" },
@@ -59,6 +119,8 @@ const guastiIniziali = [
   { id:4, mezzoId:14, mezzo:"Sollevatore DIECI PEGASUS 60.21", data:"2025-02-08", desc:"Braccio telescopico — gioco eccessivo nell'estensione.", stato:"aperto", priorita:"alta", tipo:"Meccanico", dataDisponibilita:"2025-03-28", operatore:"A. Esposito" },
   { id:5, mezzoId:6, mezzo:"Escavatore PC15", data:"2025-01-28", desc:"Sostituzione filtro idraulico — completata.", stato:"risolto", priorita:"bassa", tipo:"Idraulico", dataDisponibilita:null, operatore:"M. Russo" },
   { id:6, mezzoId:9, mezzo:"Trattore Stradale MAN", data:"2025-01-15", desc:"Pneumatico anteriore sinistro — foratura riparata.", stato:"risolto", priorita:"bassa", tipo:"Pneumatici/Carrozzeria", dataDisponibilita:null, operatore:"A. Esposito" },
+  { id:101, mezzoId:1, mezzo:"Autocarro Scarrabile", data:"2025-03-15", desc:"Pneumatico anteriore sinistro forato durante trasporto materiali in cantiere", descrizione:"Pneumatico anteriore sinistro forato durante trasporto materiali in cantiere", stato:"risolto", priorita:"bassa", tipo:"Pneumatici/Carrozzeria", dataDisponibilita:null, operatore:"Gino Manno", note:"Sostituito pneumatico presso officina autorizzata" },
+  { id:102, mezzoId:1, mezzo:"Autocarro Scarrabile", data:"2025-07-20", desc:"Perdita olio motore rilevata durante controllo pre-cantiere", descrizione:"Perdita olio motore rilevata durante controllo pre-cantiere", stato:"risolto", priorita:"media", tipo:"Meccanico", dataDisponibilita:null, operatore:"Matteo Verrengia", note:"Sostituita guarnizione testata motore" },
 ];
 
 const TIPI_GUASTO = ["Meccanico","Elettrico","Idraulico","Pneumatici/Carrozzeria","Documenti/Scadenze","Altro"];
@@ -1600,6 +1662,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       function handlePrint() {
         var m = window.__mezzoSel;
         var op = window.__operatore;
+        var guastiGlobal = window.__guastiLog || [];
         if (!m) return;
         var oggi = new Date();
         var gr = Math.ceil((new Date(m.revisione)-oggi)/86400000);
@@ -1610,33 +1673,48 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         var cB = gb<=30?"#dc2626":gb<=90?"#ea580c":"#16a34a";
         var sc = {cantiere:"#f97316",deposito:"#22c55e",officina:"#ef4444"};
         var sl = {cantiere:"In Cantiere",deposito:"Al Deposito",officina:"In Officina"};
-        var fd = function(d){ return new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"}); };
+        var fd = function(d){ return d ? new Date(d).toLocaleDateString("it-IT",{day:"2-digit",month:"short",year:"numeric"}) : ""; };
+        var storicoLavori = m.storicoLavori || m.jsstoricoLavori || [];
+        var storicoScadenze = m.storicoScadenze || [];
+        var storicoRifornimenti = m.storicoRifornimenti || [];
         var w = window.open('','_blank','width=800,height=700');
         var h = [];
         h.push('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Scheda '+m.nome+'</title>');
-        h.push('<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Segoe UI,sans-serif;padding:30px;color:#111}');
-        h.push('.hdr{display:flex;justify-content:space-between;border-bottom:3px solid #1e3a8a;padding-bottom:14px;margin-bottom:20px}');
-        h.push('.logo{font-size:22px;font-weight:900;letter-spacing:3px;color:#1e3a8a}');
-        h.push('h2{font-size:18px;font-weight:700;color:#1e3a8a;margin-bottom:8px}');
+        h.push('<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Segoe UI,sans-serif;padding:30px;color:#111;background:#f8fafc}');
+        h.push('.hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1a2440;padding-bottom:14px;margin-bottom:20px}');
+        h.push('.logo img{height:32px;display:block;margin-bottom:4px}');
+        h.push('.logo small{font-size:11px;color:#64748b}');
+        h.push('h2{font-size:18px;font-weight:700;color:#1a2440;margin-bottom:8px}');
         h.push('.sb{display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;margin-right:6px;margin-bottom:12px}');
         h.push('.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px}');
-        h.push('.box{border:1px solid #e2e8f0;border-radius:9px;padding:12px}');
-        h.push('.lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;margin-bottom:3px}');
-        h.push('.val{font-size:15px;font-weight:700}');
-        h.push('.cant{background:#fef3c7;border:1px solid #f59e0b;border-radius:9px;padding:12px;margin-bottom:18px}');
+        h.push('.box{border:1px solid #e2e8f0;border-radius:9px;padding:12px;background:#ffffff}');
+        h.push('.lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;margin-bottom:3px;letter-spacing:.5px}');
+        h.push('.val{font-size:15px;font-weight:700;color:#1a2440}');
+        h.push('.cant{background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:12px;margin-bottom:18px}');
         h.push('.firma{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px;border-top:1px solid #e2e8f0;padding-top:18px}');
         h.push('.fline{border-bottom:1px solid #111;margin-top:28px}.flbl{font-size:10px;color:#94a3b8;margin-top:5px}');
         h.push('.footer{margin-top:20px;font-size:9px;color:#94a3b8;text-align:center;padding-top:10px;border-top:1px solid #f1f5f9}');
-        h.push('@media print{body{padding:16px}}</style></head><body>');
-        h.push('<div class="hdr"><div class="logo">CO.VER. SRL<br>');
-        h.push('<small style="font-size:11px;color:#64748b">FLOTTA — GESTIONE PARCO MEZZI</small></div>');
+        h.push('.sec{margin-top:22px;margin-bottom:12px}');
+        h.push('.sec h3{font-size:13px;font-weight:700;color:#1a2440;margin-bottom:8px;text-transform:uppercase;letter-spacing:.6px}');
+        h.push('table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:6px}');
+        h.push('thead th{background:#1a2440;color:#f9fafb;padding:6px 8px;text-align:left;border-bottom:2px solid #0f172a}');
+        h.push('tbody td{padding:6px 8px;border-bottom:1px solid #e2e8f0}');
+        h.push('tbody tr:nth-child(even){background:#f9fafb}');
+        h.push('tbody tr:nth-child(odd){background:#f1f5f9}');
+        h.push('.pill-paid{color:#16a34a;font-weight:600}');
+        h.push('.pill-due{color:#ea580c;font-weight:600}');
+        h.push('.tot-row{font-size:11px;color:#111;margin-top:4px;text-align:right}');
+        h.push('@media print{body{padding:16px;background:#ffffff}}</style></head><body>');
+        h.push('<div class="hdr"><div class="logo">');
+        h.push('<img src="assets/logo-coversrl.png" alt="CO.VER. srl">');
+        h.push('<small>FLOTTA — GESTIONE PARCO MEZZI</small></div>');
         h.push('<div style="text-align:right;font-size:11px;color:#64748b">');
-        h.push('<strong style="display:block;font-size:13px;color:#111">SCHEDA MEZZO</strong>');
+        h.push('<strong style="display:block;font-size:13px;color:#1a2440">SCHEDA MEZZO</strong>');
         h.push(oggi.toLocaleDateString("it-IT",{day:"2-digit",month:"long",year:"numeric"})+'</div></div>');
         h.push('<h2>'+m.icon+' '+m.nome+(m.targa ? ' - Targa: '+m.targa : '')+'</h2>');
-        h.push('<span class="sb" style="background:#dbeafe;color:#1e3a8a">'+m.cat+'</span>');
+        h.push('<span class="sb" style="background:#f97316;color:#ffffff">'+m.cat+'</span>');
         h.push('<span class="sb" style="background:'+sc[m.stato]+'22;color:'+sc[m.stato]+'">'+sl[m.stato]+'</span>');
-        h.push('<p style="font-size:12px;color:#64748b;margin-bottom:16px;font-style:italic">'+m.desc+'</p>');
+        h.push('<p style="font-size:12px;color:#64748b;margin-bottom:16px;font-style:italic">'+(m.desc || '')+'</p>');
         if (m.stato === 'cantiere') {
           var ca = m.cantierAttuale || {};
           var nomeCan = (ca.nome || m.sito || '').trim();
@@ -1645,7 +1723,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           var dataFineCan = ca.dataFine || '';
           var giorniPerm = dataInizioCan ? Math.max(0, Math.ceil((oggi - new Date(dataInizioCan)) / 86400000)) : 0;
           h.push('<div class="cant">');
-          h.push('<div class="lbl" style="color:#b45309">Cantiere</div>');
+          h.push('<div class="lbl" style="color:#b45309">Cantiere attuale</div>');
           h.push('<div style="margin-bottom:4px"><strong>Cantiere:</strong> '+(nomeCan || '—')+'</div>');
           h.push('<div style="margin-bottom:4px"><strong>Operatore:</strong> '+(operatoreCan || '—')+'</div>');
           h.push('<div style="margin-bottom:4px"><strong>Data inizio:</strong> '+(dataInizioCan ? fd(dataInizioCan) : '—')+'</div>');
@@ -1658,18 +1736,123 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         h.push('<div class="box" style="border-left:4px solid '+cA+'"><div class="lbl">Assicurazione</div><div class="val" style="color:'+cA+'">'+fd(m.assicurazione)+'</div><div style="font-size:11px;color:'+cA+'">'+ga+' giorni</div></div>');
         h.push('<div class="box" style="border-left:4px solid '+cB+'"><div class="lbl">Bollo</div><div class="val" style="color:'+cB+'">'+fd(m.bollo)+'</div><div style="font-size:11px;color:'+cB+'">'+gb+' giorni</div></div>');
         h.push('</div>');
-        h.push('<div class="box" style="margin-bottom:18px"><div class="lbl">Carburante mensile</div><div class="val">'+(m.carburante != null && m.carburante !== '' ? m.carburante + ' L' : '—')+'</div></div>');
-        var guastiList = (window.__guastiLog || []).filter(function(g){ return g.mezzoId === m.id; });
-        if (guastiList.length > 0) {
-          h.push('<div class="lbl" style="margin-bottom:6px">Guasti registrati</div>');
-          h.push('<table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:18px">');
-          h.push('<thead><tr style="border-bottom:1px solid #e2e8f0"><th style="text-align:left;padding:6px 8px">Data</th><th style="text-align:left;padding:6px 8px">Tipo</th><th style="text-align:left;padding:6px 8px">Priorit\u00e0</th><th style="text-align:left;padding:6px 8px">Stato</th><th style="text-align:left;padding:6px 8px">Descrizione</th></tr></thead><tbody>');
-          for (var i = 0; i < guastiList.length; i++) {
-            var g = guastiList[i];
-            h.push('<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:6px 8px">'+fd(g.data)+'</td><td style="padding:6px 8px">'+(g.tipo || '—')+'</td><td style="padding:6px 8px">'+(g.priorita || '—')+'</td><td style="padding:6px 8px">'+(g.stato || '—')+'</td><td style="padding:6px 8px">'+(g.desc || '—').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</td></tr>');
+        var mediaMensileLitri = null;
+        var mesiStorico = 0;
+        if (storicoRifornimenti && storicoRifornimenti.length) {
+          var totLitriMedia = 0;
+          var mesiSet = {};
+          for (var iM = 0; iM < storicoRifornimenti.length; iM++) {
+            var rM = storicoRifornimenti[iM];
+            totLitriMedia += Number(rM.litri) || 0;
+            if (rM.data) {
+              var dM = new Date(rM.data);
+              if (!isNaN(dM)) {
+                var keyM = dM.getFullYear() + '-' + (dM.getMonth()+1);
+                mesiSet[keyM] = true;
+              }
+            }
+          }
+          mesiStorico = Object.keys(mesiSet).length;
+          if (mesiStorico > 0) {
+            mediaMensileLitri = totLitriMedia / mesiStorico;
+          }
+        }
+        var testoMedia = 'Media mensile: —';
+        if (mediaMensileLitri !== null) {
+          testoMedia = 'Media mensile: ' + mediaMensileLitri.toFixed(0) + ' L (basata su storico ' + mesiStorico + ' mesi)';
+        }
+        h.push('<div class="box" style="margin-bottom:18px"><div class="lbl">Carburante mensile stimato</div><div class="val">'+testoMedia+'</div></div>');
+
+        // SEZIONE STORICO CANTIERI
+        h.push('<div class="sec">');
+        h.push('<h3>Storico cantieri</h3>');
+        if (!storicoLavori || !storicoLavori.length) {
+          h.push('<div style="font-size:11px;color:#64748b">Nessuno storico disponibile</div>');
+        } else {
+          h.push('<table><thead><tr><th>Cantiere</th><th>Operatore</th><th>Data Inizio</th><th>Data Fine</th><th>Giorni</th></tr></thead><tbody>');
+          for (var iL = 0; iL < storicoLavori.length; iL++) {
+            var l = storicoLavori[iL];
+            var cant = (l.cantiere || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            h.push('<tr><td>'+cant+'</td><td>'+(l.operatore || '—')+'</td><td>'+fd(l.dataInizio)+'</td><td>'+fd(l.dataFine)+'</td><td>'+(l.giorni != null ? l.giorni : '—')+'</td></tr>');
           }
           h.push('</tbody></table>');
         }
+        h.push('</div>');
+
+        // SEZIONE STORICO SCADENZE
+        h.push('<div class="sec">');
+        h.push('<h3>Storico scadenze</h3>');
+        if (!storicoScadenze || !storicoScadenze.length) {
+          h.push('<div style="font-size:11px;color:#64748b">Nessuno storico disponibile</div>');
+        } else {
+          var totScad = 0;
+          h.push('<table><thead><tr><th>Tipo</th><th>Data</th><th>Importo €</th><th>Stato</th></tr></thead><tbody>');
+          for (var iS = 0; iS < storicoScadenze.length; iS++) {
+            var s = storicoScadenze[iS];
+            var imp = Number(s.importo) || 0;
+            totScad += imp;
+            var statoSc = (s.stato || '').toLowerCase();
+            var statoClass = statoSc === 'pagato' ? 'pill-paid' : 'pill-due';
+            h.push('<tr><td>'+(s.tipo || '—')+'</td><td>'+fd(s.data)+'</td><td>'+imp.toFixed(2)+'</td><td><span class="'+statoClass+'">'+(s.stato || '')+'</span></td></tr>');
+          }
+          h.push('</tbody></table>');
+          h.push('<div class="tot-row">Totale speso: <strong>€ '+totScad.toFixed(2)+'</strong></div>');
+        }
+        h.push('</div>');
+
+        // SEZIONE STORICO RIFORNIMENTI
+        h.push('<div class="sec">');
+        h.push('<h3>Storico rifornimenti</h3>');
+        if (!storicoRifornimenti || !storicoRifornimenti.length) {
+          h.push('<div style="font-size:11px;color:#64748b">Nessuno storico disponibile</div>');
+        } else {
+          var totLitri = 0;
+          var totSpesa = 0;
+          for (var iR = 0; iR < storicoRifornimenti.length; iR++) {
+            var r = storicoRifornimenti[iR];
+            totLitri += Number(r.litri) || 0;
+            totSpesa += Number(r.spesa) || 0;
+          }
+          var kmPercorsi = 0;
+          if (storicoRifornimenti.length >= 2) {
+            var kmPrimo = Number(storicoRifornimenti[0].km) || 0;
+            var kmUltimo = Number(storicoRifornimenti[storicoRifornimenti.length-1].km) || 0;
+            kmPercorsi = kmUltimo - kmPrimo;
+          }
+          h.push('<table><thead><tr><th>Data</th><th>Litri</th><th>Spesa €</th><th>Km</th><th>Operatore</th></tr></thead><tbody>');
+          for (var iR2 = 0; iR2 < storicoRifornimenti.length; iR2++) {
+            var r2 = storicoRifornimenti[iR2];
+            h.push('<tr><td>'+fd(r2.data)+'</td><td>'+(r2.litri != null ? r2.litri : '—')+'</td><td>'+((Number(r2.spesa)||0).toFixed(2))+'</td><td>'+(r2.km != null ? r2.km : '—')+'</td><td>'+(r2.operatore || '—')+'</td></tr>');
+          }
+          h.push('</tbody></table>');
+          h.push('<div class="tot-row">Totale litri: <strong>'+totLitri+' L</strong> · Totale spesa: <strong>€ '+totSpesa.toFixed(2)+'</strong> · Km percorsi: <strong>'+kmPercorsi+' km</strong></div>');
+        }
+        h.push('</div>');
+
+        // SEZIONE GUASTI
+        h.push('<div class="sec">');
+        h.push('<h3>Guasti</h3>');
+        var guastiList = guastiGlobal.filter(function(g){ return g.mezzoId === m.id; });
+        if (!guastiList.length) {
+          h.push('<div style="font-size:11px;color:#64748b">Nessun guasto registrato per questo mezzo.</div>');
+        } else {
+          var aperti = 0;
+          var risolti = 0;
+          h.push('<table><thead><tr><th>Data</th><th>Descrizione</th><th>Stato</th></tr></thead><tbody>');
+          for (var iG = 0; iG < guastiList.length; iG++) {
+            var g = guastiList[iG];
+            var statoG = (g.stato || '').toLowerCase();
+            if (statoG === 'aperto') aperti++;
+            if (statoG === 'risolto') risolti++;
+            var cls = statoG === 'risolto' ? 'pill-paid' : 'pill-due';
+            var desc = (g.desc || '—').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            h.push('<tr><td>'+fd(g.data)+'</td><td>'+desc+'</td><td><span class="'+cls+'">'+(g.stato || '')+'</span></td></tr>');
+          }
+          h.push('</tbody></table>');
+          h.push('<div class="tot-row">Totali guasti: <strong>'+aperti+' aperti</strong> · <strong>'+risolti+' risolti</strong></div>');
+        }
+        h.push('</div>');
+
         h.push('<div class="firma">');
         h.push('<div><strong>'+(op ? op.nome : '—')+'</strong><div style="font-size:10px;color:#94a3b8">'+(op ? op.ruolo : '')+'</div><div class="fline"></div><div class="flbl">Firma</div></div>');
         h.push('<div><strong>Resp. Verrengia</strong><div style="font-size:10px;color:#94a3b8">Responsabile Parco Mezzi</div><div class="fline"></div><div class="flbl">Visto</div></div>');
